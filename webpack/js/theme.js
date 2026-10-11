@@ -37,10 +37,11 @@ function current() {
 }
 
 function syncThemeColor() {
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (!meta) return;
+  const metas = document.querySelectorAll('meta[name="theme-color"]');
+  if (!metas.length) return;
   const value = getComputedStyle(root).getPropertyValue('--bg-topbar').trim().toLowerCase();
-  if (value) meta.setAttribute('content', value);
+  // Remove o media: o tema escolhido no botão vale mesmo contra o esquema do sistema.
+  if (value) metas.forEach((meta) => { meta.removeAttribute('media'); meta.setAttribute('content', value); });
 }
 
 function syncButton(theme) {

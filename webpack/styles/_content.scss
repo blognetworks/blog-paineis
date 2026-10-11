@@ -1,11 +1,6 @@
 // Conteúdo editorial, home e listas (auditoria §4 "Conteúdo e Markdown").
 // A largura de leitura (72ch) vive em _layout.scss (#pageContent).
 
-.post-content {
-  font-size: 1.125rem;
-  line-height: 1.7;
-}
-
 .post-title,
 .page-heading {
   margin: 0 0 12px;
@@ -22,6 +17,9 @@
 }
 
 .post-content {
+  font-size: 1.125rem;
+  line-height: 1.7;
+
   p {
     margin: 0 0 20px;
   }

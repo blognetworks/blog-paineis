@@ -38,39 +38,3 @@
     position: relative;
   }
 }
-
-// Menus aninhados (hoje comentados no HTML) abrem por hover e por foco.
-.subnav,
-.threenav {
-  display: none;
-  margin: 0;
-  padding: 4px;
-  list-style: none;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-control);
-  border-radius: 6px;
-}
-
-.subnav {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 3;
-}
-
-.threenav {
-  position: absolute;
-  top: 0;
-  left: 100%;
-}
-
-.subnav > li {
-  position: relative;
-}
-
-.navbox li:hover > .subnav,
-.navbox li:focus-within > .subnav,
-.subnav li:hover > .threenav,
-.subnav li:focus-within > .threenav {
-  display: block;
-}

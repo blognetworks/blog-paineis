@@ -32,9 +32,7 @@
   #rightNavbar,
   #arrowNav,
   #donate,
-  #githubReadme,
-  #githubHome,
-  #GithubStar {
+  #githubHome {
     display: none;
   }
 
@@ -45,7 +43,7 @@
   }
 
   // Navegador aberto pelo #topbarToggle: as três colunas ocupam a área de leitura em vez de
-  // comprimir o artigo. 5mobile.js parte de 88px para calcular tags e posts.
+  // comprimir o artigo.
   #cateDiv,
   #tagDiv {
     flex-basis: 88px;

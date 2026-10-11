@@ -39,7 +39,7 @@ test.describe('tema', () => {
     expect(await bgApp(page)).toBe('#0f1218');
     await expect(btn).toHaveAttribute('aria-label', 'Tema: escuro');
     await expect(btn.locator('use')).toHaveAttribute('href', '#i-moon');
-    expect(await page.locator('meta[name="theme-color"]').getAttribute('content')).toBe('#161b22');
+    expect(await page.locator('meta[name="theme-color"]').first().getAttribute('content')).toBe('#161b22');
 
     await btn.click();
     expect(await dataTheme(page)).toBeNull();
@@ -246,4 +246,21 @@ test.describe('rede', () => {
       expect(externas).toEqual([]);
     });
   }
+});
+
+test.describe('resize', () => {
+  test('carregar em 1000px e ampliar para 1440px dá a mesma largura de conteúdo de um load em 1440px', async ({ page, browser }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const fresh = await page.locator('#contentDiv').evaluate((el) => el.getBoundingClientRect().width);
+
+    const ctx = await browser.newContext({ viewport: { width: 1000, height: 800 } });
+    const p2 = await ctx.newPage();
+    await p2.goto(new URL('/', page.url()).href);
+    await p2.setViewportSize({ width: 1440, height: 900 });
+    await p2.waitForTimeout(200);
+    const resized = await p2.locator('#contentDiv').evaluate((el) => el.getBoundingClientRect().width);
+    await ctx.close();
+    expect(Math.abs(resized - fresh)).toBeLessThanOrEqual(2);
+  });
 });
