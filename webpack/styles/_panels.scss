@@ -21,6 +21,8 @@
 }
 
 .panel-title {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -124,6 +126,7 @@
   justify-content: space-between;
   gap: 6px;
   padding-inline: 4px 2px;
+  overflow: hidden;
 }
 
 #filenameDiSearch {
@@ -135,6 +138,8 @@
 
 #allCateTagPostBtn {
   display: flex;
+  min-width: 0;
+  overflow: hidden;
   align-items: center;
   gap: 6px;
   padding: 4px 6px;
@@ -164,5 +169,57 @@
 
   sup {
     color: inherit;
+  }
+}
+
+// Botões ± de largura (R5.4, WCAG 2.5.7): alternativa de um só ponteiro ao arraste do divisor.
+// Discretos: aparecem com o cabeçalho em hover ou com foco dentro dele; alvo de 24×24 (2.5.8).
+.resize-buttons {
+  flex: none;
+  display: inline-flex;
+  gap: 2px;
+  opacity: 0;
+}
+
+.panel-header:hover .resize-buttons,
+.panel-header:focus-within .resize-buttons {
+  opacity: 1;
+}
+
+// Sem hover (tela de toque), ficam sempre visíveis.
+@media (hover: none) {
+  .resize-buttons {
+    opacity: 1;
+  }
+}
+
+.resize-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  color: var(--text-tertiary);
+  background: transparent;
+  cursor: pointer;
+
+  .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+
+  // No limite (mínimo ou máximo) o clique não muda nada.
+  &[aria-disabled="true"] {
+    color: var(--text-tertiary);
+    background: transparent;
+    cursor: default;
   }
 }

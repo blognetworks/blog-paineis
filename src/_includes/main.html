@@ -14,7 +14,12 @@
 <!-- ----------------------------------------------------------------------------------------------- -->
 
 <div id="tagDiv">
-    <div class="panel-header"><span class="panel-title">Tags</span></div>
+    <div class="panel-header"><span class="panel-title">Tags</span>
+      <span class="resize-buttons">
+        <button type="button" class="resize-button" data-resize="lineLeft" data-step="-16" aria-label="Diminuir largura das tags" title="Diminuir largura das tags"><svg class="icon" aria-hidden="true"><use href="#i-minus"></use></svg></button>
+        <button type="button" class="resize-button" data-resize="lineLeft" data-step="16" aria-label="Aumentar largura das tags" title="Aumentar largura das tags"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></button>
+      </span>
+    </div>
     <ul class="tagsDiv1-allTags" id="tagnameUL">
         {% for tag in site.tags %}
             {% assign t = tag | first %}
@@ -26,7 +31,7 @@
 <!-- 这里的id 必须不能和catediv 下的id一样. 应为当标签名和大类名一样时候 高亮会出问题.会同时高亮... -->
 <!-- ----------------------------------------------------------------------------------------------- -->
 
-<div id="lineLeft"> 
+<div id="lineLeft" role="separator" tabindex="0" aria-orientation="vertical" aria-controls="tagDiv" aria-valuenow="128" aria-valuemin="88" aria-valuemax="300" aria-label="Largura das tags">
   <div class="lineFlex">
     <div id="lineLeft-left">  </div>
       <div class="lineInDiv"> </div> 
@@ -50,6 +55,11 @@
         <button type="button" class="icon-button" id="filenameDivDate" aria-pressed="false" aria-label="Mostrar ou ocultar datas" title="Mostrar ou ocultar datas">
           <svg class="icon" aria-hidden="true"><use href="#icon-eyeblocked"></use></svg>
         </button>
+        <!-- Botões ± (R5.4): initResize() em webpack/js/resize.js. -->
+        <span class="resize-buttons">
+          <button type="button" class="resize-button" data-resize="lineRight" data-step="-16" aria-label="Diminuir largura dos posts" title="Diminuir largura dos posts"><svg class="icon" aria-hidden="true"><use href="#i-minus"></use></svg></button>
+          <button type="button" class="resize-button" data-resize="lineRight" data-step="16" aria-label="Aumentar largura dos posts" title="Aumentar largura dos posts"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></button>
+        </span>
 		</div>
 		<ul id="filenameUL">
 			{% for post in site.posts reversed %}
@@ -60,7 +70,7 @@
 		</ul>
 	</div>
 
-<div id="lineRight"> 
+<div id="lineRight" role="separator" tabindex="0" aria-orientation="vertical" aria-controls="filenameDiv" aria-valuenow="256" aria-valuemin="160" aria-valuemax="500" aria-label="Largura dos posts">
   <div class="lineFlex">
     <div id="lineRight-left">  </div>
       <div class="lineInDiv"> </div> 
@@ -94,7 +104,7 @@
 	<!-- 带page前缀 就不会显示文件的标题.  没有page前缀就会显示文件标题 -->
 </div>
 
-<div id="lineSide"> 
+<div id="lineSide" role="separator" tabindex="0" aria-orientation="vertical" aria-controls="rightNavbar" aria-valuenow="192" aria-valuemin="120" aria-valuemax="400" aria-label="Largura do sumário">
   <div class="lineFlex">
     <div id="lineSide-left">  </div>
       <div class="lineInDiv"> </div> 
@@ -102,7 +112,12 @@
   </div>
 </div>
 <div id="rightNavbar">
-	<div class="panel-header"><span class="panel-title">Nesta página</span></div>
+	<div class="panel-header"><span class="panel-title">Nesta página</span>
+	  <span class="resize-buttons">
+	    <button type="button" class="resize-button" data-resize="lineSide" data-step="-16" aria-label="Diminuir largura do sumário" title="Diminuir largura do sumário"><svg class="icon" aria-hidden="true"><use href="#i-minus"></use></svg></button>
+	    <button type="button" class="resize-button" data-resize="lineSide" data-step="16" aria-label="Aumentar largura do sumário" title="Aumentar largura do sumário"><svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></button>
+	  </span>
+	</div>
 	<ul id="MDh1" class="CSMDh1">
 		<!--  <p style='text-align: center'> {{page.title}} </p>  文章标题.这里不是pjax区域.会有问题 -->
 	</ul>

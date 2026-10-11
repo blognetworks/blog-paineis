@@ -6,6 +6,7 @@ import { initShortcuts } from './shortcuts.js';
 import { registerSW } from './sw-register.js';
 import { initFilter } from './filter.js';
 import { initDates } from './dates.js';
+import { initResize } from './resize.js';
 
 function init() {
   initNav();
@@ -14,6 +15,7 @@ function init() {
   initTocSpy();
   initFilter();
   initDates();
+  initResize();
 
   // Carregamento inicial e cada navegação parcial.
   buildToc();

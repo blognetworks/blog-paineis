@@ -8,7 +8,7 @@ const names = [
   'panel-left', 'panel-right', 'folder-git-2', 'chevron-left', 'chevron-right',
   'smartphone', 'mail', 'search', 'folder', 'tags', 'file-text', 'eye', 'eye-off',
   'heart-handshake', 'panel-left-close', 'panel-left-open', 'arrow-up-to-line',
-  'monitor', 'sun', 'moon', 'file-user', 'code-xml',
+  'monitor', 'sun', 'moon', 'file-user', 'code-xml', 'minus', 'plus',
 ];
 // Ids legados que o JS escreve em #filenameDivDate.
 const aliases = { 'icon-13eye': 'eye', 'icon-eyeblocked': 'eye-off' };

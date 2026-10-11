@@ -1,7 +1,7 @@
 // Estrutura das cinco regiões (auditoria §4 "Estrutura e superfícies", "Divisores arrastáveis",
 // "Anterior/próximo e controles inferiores").
-// Larguras são INICIAIS (sem !important): o flex-basis inline escrito pelo 9dragbar.js prevalece.
-// Padding externo dos painéis fica 0, porque a matemática do arraste desconta padding.
+// Larguras são INICIAIS (sem !important): o flex-basis inline escrito pelo resize.js prevalece.
+// Padding externo dos painéis fica 0: a largura do arraste é a do painel inteiro.
 
 // Precisa ser 100%, não 100vh (Safari ao dar zoom).
 #bigDiv {
@@ -107,6 +107,15 @@
   flex: 0 0 10px;
   cursor: col-resize;
   background: transparent;
+  // Pointer Events sem rolagem nem gesto do navegador durante o arraste.
+  touch-action: none;
+}
+
+// Durante o arraste (resize.js): cursor estável e sem seleção de texto.
+.is-resizing,
+.is-resizing * {
+  cursor: col-resize !important;
+  user-select: none;
 }
 
 .lineFlex {

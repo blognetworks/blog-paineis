@@ -43,6 +43,11 @@
     display: none !important;
   }
 
+  // Sem divisores no mobile, sem botões de largura: as colunas se ajustam à tela.
+  .resize-buttons {
+    display: none;
+  }
+
   // Navegador aberto pelo #topbarToggle: as três colunas ocupam a área de leitura em vez de
   // comprimir o artigo.
   #cateDiv,

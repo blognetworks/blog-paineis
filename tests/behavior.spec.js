@@ -359,11 +359,6 @@ test.describe('painéis e atalhos', () => {
     await page.goto('/');
     const cate = page.locator('#cateDiv');
 
-    // Separador focável (a tarefa 4 dá role="separator" e tabindex nativos aos divisores).
-    await page.locator('#lineLeft').evaluate((el) => {
-      if (!el.hasAttribute('tabindex')) el.tabIndex = 0;
-      if (!el.hasAttribute('role')) el.setAttribute('role', 'separator');
-    });
     for (const alvo of ['#lineLeft', '#Frontend', '#leftBtn']) {
       await page.locator(alvo).focus();
       await page.keyboard.press('ArrowLeft');
@@ -385,5 +380,134 @@ test.describe('painéis e atalhos', () => {
     await page.locator('#contentDiv').evaluate((el) => { el.scrollTop = 200; });
     await page.keyboard.press('ArrowUp');
     await expect.poll(() => page.locator('#contentDiv').evaluate((el) => el.scrollTop)).toBe(0);
+  });
+});
+
+// Redimensionamento acessível (002, tarefa 4): ponteiro, teclado e botões ± (R3.6, R5.3, R5.4).
+test.describe('redimensionamento', () => {
+  const basis = (page, sel) => page.locator(sel).evaluate((el) => parseFloat(getComputedStyle(el).flexBasis));
+
+  test('divisores são separadores focáveis com aria-valuenow/min/max e aria-controls', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const esperado = {
+      lineLeft: ['tagDiv', '88', '300', '128'],
+      lineRight: ['filenameDiv', '160', '500', '256'],
+      lineSide: ['rightNavbar', '120', '400', '192'],
+    };
+    for (const [id, [controls, min, max, now]] of Object.entries(esperado)) {
+      const sep = page.locator(`#${id}`);
+      await expect(sep, id).toHaveAttribute('role', 'separator');
+      await expect(sep, id).toHaveAttribute('tabindex', '0');
+      await expect(sep, id).toHaveAttribute('aria-orientation', 'vertical');
+      await expect(sep, id).toHaveAttribute('aria-controls', controls);
+      await expect(sep, id).toHaveAttribute('aria-valuemin', min);
+      await expect(sep, id).toHaveAttribute('aria-valuemax', max);
+      await expect(sep, id).toHaveAttribute('aria-valuenow', now);
+      await expect(sep, id).toHaveAccessibleName(/.+/);
+    }
+  });
+
+  test('teclado: → soma 16px, ← subtrai, Home restaura 128px e aria-valuenow acompanha', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const sep = page.locator('#lineLeft');
+    await sep.focus();
+    await page.keyboard.press('ArrowRight');
+    expect(await basis(page, '#tagDiv')).toBe(144);
+    await expect(sep).toHaveAttribute('aria-valuenow', '144');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowLeft');
+    expect(await basis(page, '#tagDiv')).toBe(144);
+    // ← não dispara o atalho global de recolher.
+    await expect(page.locator('#cateDiv')).toBeVisible();
+    await page.keyboard.press('Home');
+    expect(await basis(page, '#tagDiv')).toBe(128);
+    await expect(sep).toHaveAttribute('aria-valuenow', '128');
+    // Clamp no mínimo.
+    for (let i = 0; i < 6; i++) await page.keyboard.press('ArrowLeft');
+    expect(await basis(page, '#tagDiv')).toBe(88);
+    await expect(sep).toHaveAttribute('aria-valuenow', '88');
+  });
+
+  test('arrastar #lineLeft atualiza aria-valuenow e respeita o máximo', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const box = await page.locator('#lineLeft').boundingBox();
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x + 400, y, { steps: 10 });
+    await page.mouse.up();
+    expect(await basis(page, '#tagDiv')).toBe(300);
+    await expect(page.locator('#lineLeft')).toHaveAttribute('aria-valuenow', '300');
+  });
+
+  test('botões ± do cabeçalho de tags mudam 16px e respeitam 88–300', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const header = page.locator('#tagDiv > .panel-header');
+    const mais = header.getByRole('button', { name: 'Aumentar largura das tags' });
+    const menos = header.getByRole('button', { name: 'Diminuir largura das tags' });
+    await header.hover();
+    await mais.click();
+    expect(await basis(page, '#tagDiv')).toBe(144);
+    await expect(page.locator('#lineLeft')).toHaveAttribute('aria-valuenow', '144');
+    await menos.click();
+    await menos.click();
+    expect(await basis(page, '#tagDiv')).toBe(112);
+    await menos.click();
+    await menos.click();
+    expect(await basis(page, '#tagDiv')).toBe(88);
+    // No limite o botão fica aria-disabled e cliques extras não passam do mínimo.
+    await expect(menos).toHaveAttribute('aria-disabled', 'true');
+    await menos.click({ force: true });
+    expect(await basis(page, '#tagDiv')).toBe(88);
+
+    await page.locator('#lineLeft').focus();
+    await page.keyboard.press('Home');
+    await expect(menos).toHaveAttribute('aria-disabled', 'false');
+    for (let i = 0; i < 11; i++) await mais.click();
+    expect(await basis(page, '#tagDiv')).toBe(300);
+    await expect(mais).toHaveAttribute('aria-disabled', 'true');
+    await mais.click({ force: true });
+    expect(await basis(page, '#tagDiv')).toBe(300);
+
+    // Alvo mínimo de 24×24 (WCAG 2.5.8).
+    const b = await mais.boundingBox();
+    expect(b.width).toBeGreaterThanOrEqual(24);
+    expect(b.height).toBeGreaterThanOrEqual(24);
+  });
+
+  test('posts e sumário também têm botões ±', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const href = await page.locator('#filenameUL a').first().getAttribute('href');
+    await page.goto(href);
+    await page.locator('#filenameDivBtnes').getByRole('button', { name: 'Aumentar largura dos posts' }).click();
+    expect(await basis(page, '#filenameDiv')).toBe(272);
+    const toc = page.locator('#rightNavbar > .panel-header');
+    await toc.getByRole('button', { name: 'Aumentar largura do sumário' }).click();
+    expect(await basis(page, '#rightNavbar')).toBe(208);
+    await toc.getByRole('button', { name: 'Diminuir largura do sumário' }).click();
+    expect(await basis(page, '#rightNavbar')).toBe(192);
+  });
+
+  test('botões ± ficam ocultos no mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    await page.locator('#topbarToggle').click();
+    await expect(page.locator('#tagDiv > .panel-header')).toBeVisible();
+    await expect(page.getByRole('button', { name: /largura/ })).toHaveCount(0);
+  });
+
+  test('sem violações axe aria-allowed-role, button-name e atributos ARIA', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const { violations } = await new AxeBuilder({ page })
+      .withRules(['aria-allowed-role', 'button-name', 'aria-valid-attr-value', 'aria-required-attr'])
+      .analyze();
+    expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(', ')}`)).toEqual([]);
   });
 });
