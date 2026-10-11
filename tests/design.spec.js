@@ -186,6 +186,21 @@ test.describe('mobile 390×844', () => {
       await expect(page.locator(id), id).toBeVisible();
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    // O fim de cada lista do navegador é alcançável dentro da tela.
+    await page.waitForTimeout(200); // animação .show(100)
+    for (const list of ['#filenameUL', '#catenameUL', '#tagnameUL']) {
+      const r = await page.locator(list).evaluate((ul) => {
+        ul.scrollTop = ul.scrollHeight;
+        const items = [...ul.querySelectorAll('li')].filter((li) => li.offsetParent);
+        return {
+          lastBottom: items[items.length - 1].getBoundingClientRect().bottom,
+          listBottom: ul.getBoundingClientRect().bottom,
+          viewport: window.innerHeight,
+        };
+      });
+      expect(r.listBottom, list).toBeLessThanOrEqual(r.viewport + 0.5);
+      expect(r.lastBottom, list).toBeLessThanOrEqual(r.viewport + 0.5);
+    }
     await page.locator('#filenameUL li.postNames:visible').first().click();
     for (const id of ['#cateDiv', '#tagDiv', '#filenameDiv', '#rightNavbar']) {
       await expect(page.locator(id), id).toBeHidden();

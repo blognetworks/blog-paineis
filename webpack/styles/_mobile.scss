@@ -62,6 +62,18 @@
     flex-grow: 1;
   }
 
+  // As listas cabem no painel: 9ES6-scroll.js mede o cabeçalho com o painel oculto (altura 0)
+  // e escreve uma altura inline grande demais. Aqui a lista ocupa o painel (altura de #Div)
+  // menos o cabeçalho fixo de 40px (_panels.scss). !important só sobrepõe a altura inline do JS,
+  // não as larguras (R7.1).
+  #catenameUL,
+  #tagnameUL,
+  #filenameUL {
+    height: calc(100% - 40px) !important;
+  }
+
+  // Depende do display inline que o jQuery .show()/.hide() escreve em #filenameDiv.
+  // Na 002 (reescrita do JS) deve virar uma classe de estado (ex.: #Div.is-nav-open).
   #Div:has(> #filenameDiv[style*="display: block"]) > #contentDiv {
     display: none;
   }
