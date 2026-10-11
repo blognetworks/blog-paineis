@@ -1,0 +1,118 @@
+// Blocos de código e tema Rouge acessível (auditoria §4 "Blocos de código e Rouge").
+// Somente tokens --code-*; o bloco rola na horizontal dentro de si.
+
+.highlight {
+  margin: 24px 0;
+  color: var(--code-text);
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  overflow: hidden;
+
+  pre {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    white-space: pre;
+    background: transparent;
+  }
+
+  pre,
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    font-variant-ligatures: none;
+  }
+}
+
+.post-content :not(pre) > code {
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: var(--code-inline-text);
+  background: var(--code-inline-bg);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+.highlight {
+  // Comentários
+  :is(.c, .ch, .cd, .cm, .c1, .cs, .cp, .cpf) {
+    color: var(--code-comment);
+    font-style: italic;
+  }
+  // Palavras-chave
+  :is(.k, .kc, .kd, .kn, .kp, .kr, .kt, .kv) {
+    color: var(--code-keyword);
+    font-weight: 600;
+  }
+  // Strings
+  :is(.s, .sa, .sb, .sc, .dl, .sd, .s1, .s2, .se, .sh, .si, .sx, .ss) {
+    color: var(--code-string);
+  }
+  .sr {
+    color: var(--code-regex);
+  }
+  // Números
+  :is(.m, .mb, .mf, .mh, .mi, .mo, .mx, .il) {
+    color: var(--code-number);
+  }
+  :is(.nf, .fm) {
+    color: var(--code-function);
+    font-weight: 600;
+  }
+  :is(.nc, .nd, .ne, .nb, .bp) {
+    color: var(--code-type);
+    font-weight: 600;
+  }
+  :is(.no, .nt) {
+    color: var(--code-constant);
+  }
+  .na {
+    color: var(--code-attribute);
+  }
+  :is(.n, .nx, .nv, .vc, .vg, .vi, .nn, .nl, .ni, .py) {
+    color: var(--code-variable);
+  }
+  :is(.o, .ow) {
+    color: var(--code-operator);
+  }
+  :is(.p, .pi) {
+    color: var(--code-punctuation);
+  }
+  :is(.l, .ld, .w, .go) {
+    color: var(--code-text);
+  }
+  .gp {
+    color: var(--code-comment);
+    font-weight: 600;
+  }
+  :is(.gh, .gu, .gs) {
+    color: var(--code-text);
+    font-weight: 600;
+  }
+  .ge {
+    color: var(--code-text);
+    font-style: italic;
+  }
+  :is(.err, .gr, .gt) {
+    color: var(--code-error);
+    background: var(--code-error-bg);
+  }
+  .err {
+    text-decoration: underline wavy;
+    text-underline-offset: 3px;
+  }
+  .gi {
+    color: var(--code-text);
+    background: var(--code-insert-bg);
+  }
+  .gd {
+    color: var(--code-text);
+    background: var(--code-delete-bg);
+  }
+  .hll {
+    color: var(--code-text);
+    background: var(--code-mark-bg);
+  }
+}
