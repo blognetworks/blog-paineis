@@ -1,0 +1,32 @@
+---
+layout: post
+title: "HTML 2: lorem ipsum"
+categories: Frontend
+tags: HTML
+---
+
+Introdução sobre HTML. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+## Visão geral 2
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+<img class="lazy" data-original="/assets/img/placeholder.svg" src="/assets/img/placeholder.svg" width="640" height="360" alt="Imagem de exemplo">
+
+### Exemplo em JavaScript
+
+```js
+const soma = (a, b) => a + b;
+console.log(soma(2, 2));
+```
+
+#### Exemplo em Ruby
+
+```ruby
+def saudacao(nome) = "Olá, #{nome}"
+puts saudacao("HTML")
+```
+
+##### Notas finais
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
