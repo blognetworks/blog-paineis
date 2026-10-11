@@ -54,15 +54,19 @@ test.describe('doação configurável', () => {
 
   test('donate_url com valor: #donate é um link externo seguro', async () => {
     const dest = fs.mkdtempSync(path.join(os.tmpdir(), 'donate-'));
-    execFileSync('bundle', ['exec', 'jekyll', 'build', '--config', '_config.yml,tests/fixtures/donate.yml', '--destination', dest], { stdio: 'pipe' });
-    const html = fs.readFileSync(path.join(dest, 'index.html'), 'utf8');
-    const tag = html.match(/<a\b[^>]*\bid="donate"[^>]*>/);
-    expect(tag).not.toBeNull();
-    expect(tag[0]).toContain('href="https://example.com/apoie"');
-    expect(tag[0]).toContain('target="_blank"');
-    expect(tag[0]).toMatch(/rel="[^"]*noopener/);
-    expect(tag[0]).toContain('aria-label="Apoiar (abre em nova aba)"');
-    expect(html).not.toContain('alert(');
+    try {
+      execFileSync('bundle', ['exec', 'jekyll', 'build', '--config', '_config.yml,tests/fixtures/donate.yml', '--destination', dest], { stdio: 'pipe' });
+      const html = fs.readFileSync(path.join(dest, 'index.html'), 'utf8');
+      const tag = html.match(/<a\b[^>]*\bid="donate"[^>]*>/);
+      expect(tag).not.toBeNull();
+      expect(tag[0]).toContain('href="https://example.com/apoie"');
+      expect(tag[0]).toContain('target="_blank"');
+      expect(tag[0]).toMatch(/rel="[^"]*noopener/);
+      expect(tag[0]).toContain('aria-label="Apoiar (abre em nova aba)"');
+      expect(html).not.toContain('alert(');
+    } finally {
+      fs.rmSync(dest, { recursive: true, force: true });
+    }
   });
 });
 
@@ -77,4 +81,75 @@ test.describe('contraste (axe) com a nova imagem', () => {
       expect(r.violations).toEqual([]);
     });
   }
+});
+
+test.describe('navegação parcial: âncora e rolagem', () => {
+  const scrollTop = (page) => page.locator('#contentDiv').evaluate((el) => el.scrollTop);
+
+  // Rola para o sumário do post carregado e devolve o href do último item.
+  async function ultimaAncora(page, post) {
+    await page.goto(post);
+    return page.locator('#MDh1 > li a').last().getAttribute('href');
+  }
+
+  test('1e: navegar para post#N rola o alvo para dentro de #contentDiv', async ({ page }) => {
+    const post = await primeiroPost(page);
+    const hash = await ultimaAncora(page, post);
+    await page.goto('/');
+    await page.evaluate(() => { window.__semRecarga = true; });
+    await page.evaluate(([href]) => {
+      const a = document.createElement('a');
+      a.id = 'saltoTeste';
+      a.href = href;
+      a.textContent = 'salto';
+      document.body.append(a);
+    }, [post + hash]);
+    await page.locator('#saltoTeste').evaluate((a) => a.click());
+    await expect(page.locator('#MDh1 > li').first()).toBeAttached();
+    expect(await page.evaluate(() => window.__semRecarga)).toBe(true);
+    const id = hash.slice(1);
+    await expect.poll(() => page.evaluate((n) => {
+      const alvo = document.querySelector(`[name="${n}"]`).parentElement;
+      const box = document.getElementById('contentDiv').getBoundingClientRect();
+      const r = alvo.getBoundingClientRect();
+      return r.top >= box.top - 1 && r.bottom <= box.bottom + 1;
+    }, id)).toBe(true);
+    expect(await scrollTop(page)).toBeGreaterThan(0);
+  });
+
+  test('1f: voltar restaura o scrollTop que o post tinha ao sair', async ({ page }) => {
+    await page.goto('/');
+    const posts = await page.locator('#contentDiv .post-list a.post-link').evaluateAll((as) => as.slice(0, 2).map((a) => a.getAttribute('href')));
+    await page.goto(posts[0]);
+    await page.evaluate(() => { window.__semRecarga = true; });
+    await page.locator('#contentDiv').evaluate((el) => { el.scrollTop = 600; });
+    const antes = await scrollTop(page);
+    expect(antes).toBeGreaterThan(300);
+    await page.evaluate((h) => {
+      const a = document.createElement('a');
+      a.id = 'saltoTeste';
+      a.href = h;
+      document.body.append(a);
+      a.click();
+    }, posts[1]);
+    await expect(page).toHaveURL(new RegExp(posts[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
+    await expect.poll(() => scrollTop(page)).toBe(0);
+    await page.goBack();
+    await expect(page).toHaveURL(new RegExp(posts[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
+    await expect.poll(async () => Math.abs((await scrollTop(page)) - antes)).toBeLessThanOrEqual(20);
+    expect(await page.evaluate(() => window.__semRecarga)).toBe(true);
+  });
+
+  test('popstate para a primeira entrada (sem state) troca o conteúdo e rola ao topo', async ({ page }) => {
+    await page.goto('/');
+    // Remove o state da primeira entrada, como numa entrada criada antes do JS.
+    await page.evaluate(() => { history.replaceState(null, '', location.href); window.__semRecarga = true; });
+    const link = page.locator('#contentDiv .post-list a.post-link').first();
+    await link.click();
+    await expect(page.locator('#pageContent h1.post-title')).toBeVisible();
+    await page.goBack();
+    await expect(page.locator('#contentDiv .post-list')).toBeVisible();
+    expect(await page.evaluate(() => window.__semRecarga)).toBe(true);
+    expect(await scrollTop(page)).toBe(0);
+  });
 });
