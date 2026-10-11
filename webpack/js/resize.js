@@ -98,6 +98,7 @@ export function initResize() {
   }
 
   on(document, 'click', '[data-resize]', (event, btn) => {
+    if (btn.getAttribute('aria-disabled') === 'true') return; // no limite: nada a fazer
     const id = btn.dataset.resize;
     if (PANELS[id]) nudge(id, Number(btn.dataset.step) || 0);
   });

@@ -1,6 +1,6 @@
 # Blog CMS de três colunas
 
-Blog Jekyll com navegação Categorias → Tags → Posts, PJAX, barras arrastáveis e sumário por post. Baseado no tema CMS de Xu-Jian.
+Blog Jekyll com navegação Categorias → Tags → Posts, navegação parcial sem recarga, barras redimensionáveis e sumário por post. Baseado no tema CMS de Xu-Jian.
 
 ## Requisitos
 
@@ -33,6 +33,25 @@ O Jekyll não compila JS/CSS: rode `npm run build` (ou `npm run serve`) antes de
 O tema segue o claro/escuro do sistema. O botão no canto direito da barra superior alterna em ciclo **Sistema → Claro → Escuro → Sistema** e guarda a escolha em `localStorage["blog.theme"]` (`system`, `light` ou `dark`), aplicada antes da primeira pintura. Para voltar ao padrão, escolha "Sistema" ou apague essa chave. As cores são tokens CSS em `webpack/styles/_tokens.scss`.
 
 Abaixo de 1024px de largura só a barra e o artigo aparecem; os botões de painel da barra abrem a navegação e o sumário.
+
+## Arquitetura do JS
+
+JS vanilla em módulos ES (sem jQuery), em `webpack/js/`. `entry.js` importa CSS, fontes, `theme.js` e `main.js`, o único módulo com efeito colateral: ele chama os `init*()` uma vez no `DOMContentLoaded`.
+
+| Módulo | Responsabilidade |
+|---|---|
+| `dom.js` | `qs`, `qsa`, `on` (com delegação), `isMobile()` e `MOBILE_QUERY` |
+| `theme.js` | Tema Sistema → Claro → Escuro |
+| `nav.js` | Navegação parcial (`fetch` + `history`) que troca só o `#contentDiv`; emite `nav:start`/`nav:end` e controla o NProgress |
+| `panels.js` | Painéis por classe (`.is-hidden`, `#Div.is-nav-open`), recolher/restaurar, voltar ao topo, anterior/próximo da barra |
+| `filter.js` | Filtro categoria → tag → post, por clique, Enter ou Espaço; "mostrar tudo" |
+| `dates.js` | Mostra e oculta as datas dos posts |
+| `toc.js` | Sumário de h2 a h6 e destaque da seção visível |
+| `resize.js` | Divisores por ponteiro, teclado (← → 16px, Home) e botões ± |
+| `shortcuts.js` | Atalhos globais ← → ↑, ignorados com foco em controles |
+| `sw-register.js` | Registra `/sw.js` |
+
+Contratos completos em [`docs/specs/002-js-vanilla/plan.md`](docs/specs/002-js-vanilla/plan.md).
 
 ## Ícones
 

@@ -44,11 +44,11 @@
       </li>
       <!-- 手机图标 -->
       <li id="mobile">
-        <button type="button" class="icon-button" onclick="alert('{{site.name}}: {{site.Phone}}')" title="Telefone" aria-label="Telefone">
+        <a class="icon-button" href="tel:{{ site.Phone | remove: ' ' }}" title="Telefone: {{ site.Phone }}" aria-label="Telefone">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#i-smartphone"></use>
           </svg>
-        </button>
+        </a>
       </li>
 
       <!-- resume 

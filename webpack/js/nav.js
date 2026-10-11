@@ -3,7 +3,7 @@
 //   nav:start  { detail: { url } }
 //   nav:end    { detail: { url } }
 // Qualquer falha (rede, status ≠ 200, resposta que não é HTML, página sem #contentDiv)
-// cai para a navegação normal com location.assign.
+// cai para a navegação normal com location.assign (location.replace no popstate).
 import NProgress from 'nprogress';
 import { on, qs } from './dom.js';
 
@@ -55,6 +55,8 @@ export async function navigate(url, { push = true } = {}) {
     const res = await fetch(target.href, { headers: { Accept: 'text/html' }, signal: ctrl.signal });
     const type = res.headers.get('content-type') || '';
     if (res.status !== 200 || !type.includes('text/html')) throw new Error(`resposta ${res.status} ${type}`);
+    // Um redirecionamento para outra origem não troca o conteúdo: navegação normal.
+    if (new URL(res.url || target.href).origin !== location.origin) throw new Error('resposta de outra origem');
     const html = await res.text();
     if (ctrl !== controller) return; // outra navegação começou enquanto o corpo chegava
 
@@ -82,7 +84,9 @@ export async function navigate(url, { push = true } = {}) {
     emit('nav:end', finalUrl.href);
   } catch (err) {
     if (err?.name === 'AbortError') return;
-    location.assign(target.href);
+    // No popstate (push = false) a URL já está no histórico: replace evita uma entrada duplicada.
+    if (push) location.assign(target.href);
+    else location.replace(target.href);
   } finally {
     if (controller === ctrl) controller = null;
   }

@@ -22,14 +22,16 @@ test('home carrega com 4 categorias, 12 tags, 24 posts e sem erros', async ({ pa
   expect(errors).toEqual([]);
 });
 
-test('plugins jQuery estão carregados', async ({ page }) => {
+test('sem jQuery: window.jQuery e window.$ indefinidos, NProgress disponível', async ({ page }) => {
   await page.goto('/');
-  const ok = await page.evaluate(() => ({
-    pjax: typeof window.$?.fn?.pjax,
-    lazyload: typeof window.$?.fn?.lazyload,
-    nprogress: typeof window.NProgress?.start,
+  const globals = await page.evaluate(() => ({
+    jQuery: typeof window.jQuery,
+    dollar: typeof window.$,
   }));
-  expect(ok).toEqual({ pjax: 'function', lazyload: 'function', nprogress: 'function' });
+  expect(globals).toEqual({ jQuery: 'undefined', dollar: 'undefined' });
+  // O NProgress vem empacotado no bundle (não é global): disponível = a barra aparece no nav:start.
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('nav:start', { detail: { url: location.href } })));
+  await expect(page.locator('#nprogress')).toBeAttached();
 });
 
 test('clicar numa categoria filtra tags e posts', async ({ page }) => {

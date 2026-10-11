@@ -511,3 +511,35 @@ test.describe('redimensionamento', () => {
     expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(', ')}`)).toEqual([]);
   });
 });
+
+// Aceite final (002): regras axe 3h na home e num post, lazyload nativo e #mobile como tel:.
+test.describe('aceite final', () => {
+  for (const pagina of ['home', 'post']) {
+    test(`${pagina} sem violações axe button-name, link-name, aria-allowed-role, nested-interactive e listitem`, async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.goto('/');
+      if (pagina === 'post') await page.goto(await page.locator('#filenameUL a').first().getAttribute('href'));
+      const { violations } = await new AxeBuilder({ page })
+        .withRules(['button-name', 'link-name', 'aria-allowed-role', 'nested-interactive', 'listitem'])
+        .analyze();
+      expect(violations.flatMap((v) => v.nodes.map((n) => `${v.id} ${n.target.join(' ')}`))).toEqual([]);
+    });
+  }
+
+  test('imagens do post usam lazyload nativo e mantêm a classe lazy (R3.7)', async ({ page }) => {
+    await page.goto('/');
+    await page.goto(await page.locator('#filenameUL a').first().getAttribute('href'));
+    const img = page.locator('#pageContent img.lazy');
+    await expect(img).toHaveAttribute('loading', 'lazy');
+    await expect(page.locator('#pageContent img[data-original]')).toHaveCount(0);
+  });
+
+  test('#mobile abre tel: com o número no title, sem alert', async ({ page }) => {
+    await page.goto('/');
+    const link = page.locator('#mobile a');
+    await expect(link).toHaveAttribute('href', /^tel:\d+$/);
+    await expect(link).toHaveAttribute('title', /\d/);
+    await expect(link).toHaveAccessibleName('Telefone');
+    await expect(page.locator('#mobile [onclick]')).toHaveCount(0);
+  });
+});

@@ -24,7 +24,7 @@ function body(tag, n) {
 
 ${LOREM}
 
-<img class="lazy" data-original="/assets/img/placeholder.svg" src="/assets/img/placeholder.svg" width="640" height="360" alt="Imagem de exemplo">
+<img class="lazy" loading="lazy" src="/assets/img/placeholder.svg" width="640" height="360" alt="Imagem de exemplo">
 
 ### Exemplo em JavaScript
 
