@@ -70,6 +70,26 @@ test.describe('doação configurável', () => {
   });
 });
 
+test.describe('data em português (fronteira de dezembro)', () => {
+  test('data-pt.html: 2024-12-05 -> "05 dez 2024" e 2025-01-31 -> "31 jan 2025"', async () => {
+    const src = fs.mkdtempSync(path.join(os.tmpdir(), 'datapt-src-'));
+    const dest = fs.mkdtempSync(path.join(os.tmpdir(), 'datapt-out-'));
+    try {
+      fs.mkdirSync(path.join(src, '_includes'));
+      fs.copyFileSync('src/_includes/data-pt.html', path.join(src, '_includes', 'data-pt.html'));
+      fs.writeFileSync(path.join(src, '_config.yml'), 'plugins: []\n');
+      fs.writeFileSync(path.join(src, 'index.html'),
+        '---\n---\n[{% include data-pt.html date="2024-12-05" %}][{% include data-pt.html date="2025-01-31" %}]');
+      execFileSync('bundle', ['exec', 'jekyll', 'build', '--source', src, '--config', path.join(src, '_config.yml'), '--destination', dest], { stdio: 'pipe' });
+      const html = fs.readFileSync(path.join(dest, 'index.html'), 'utf8');
+      expect(html).toContain('[05 dez 2024][31 jan 2025]');
+    } finally {
+      fs.rmSync(src, { recursive: true, force: true });
+      fs.rmSync(dest, { recursive: true, force: true });
+    }
+  });
+});
+
 test.describe('contraste (axe) com a nova imagem', () => {
   for (const theme of ['light', 'dark']) {
     test(`post sem violações de color-contrast no tema ${theme}`, async ({ page }) => {
@@ -138,6 +158,32 @@ test.describe('navegação parcial: âncora e rolagem', () => {
     await expect(page).toHaveURL(new RegExp(posts[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
     await expect.poll(async () => Math.abs((await scrollTop(page)) - antes)).toBeLessThanOrEqual(20);
     expect(await page.evaluate(() => window.__semRecarga)).toBe(true);
+  });
+
+  test('ids de entrada são únicos entre recarregamentos: voltar após reload restaura a rolagem certa', async ({ page }) => {
+    await page.goto('/');
+    const posts = await page.locator('#contentDiv .post-list a.post-link').evaluateAll((as) => as.slice(0, 2).map((a) => a.getAttribute('href')));
+    const clicar = (h) => page.evaluate((href) => {
+      const a = document.createElement('a');
+      a.href = href;
+      document.body.append(a);
+      a.click();
+      a.remove();
+    }, h);
+    const rolar = (y) => page.locator('#contentDiv').evaluate((el, v) => { el.scrollTop = v; }, y);
+    // A primeira entrada é o próprio post A (id 1): depois do reload o post B também recebia id 1.
+    await page.goto(posts[0]);
+    await rolar(600);
+    const a = await scrollTop(page);
+    expect(a).toBeGreaterThan(300);
+    await clicar(posts[1]);
+    await expect(page).toHaveURL(new RegExp(posts[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
+    await expect.poll(() => scrollTop(page)).toBe(0);
+    await rolar(300);
+    await page.reload();
+    await page.goBack();
+    await expect(page).toHaveURL(new RegExp(posts[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
+    await expect.poll(async () => Math.abs((await scrollTop(page)) - a)).toBeLessThanOrEqual(20);
   });
 
   test('popstate para a primeira entrada (sem state) troca o conteúdo e rola ao topo', async ({ page }) => {

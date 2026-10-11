@@ -1,7 +1,9 @@
 // Navegação parcial (substitui o jquery-pjax): fetch + DOMParser troca só o #contentDiv,
 // atualiza document.title e a URL (history), e avisa os outros módulos com eventos em document:
 //   nav:start  { detail: { url } }
-//   nav:end    { detail: { url } }
+//   nav:end    { detail: { url, restored } }  (restored: a rolagem da entrada foi restaurada no voltar/avançar)
+// history.scrollRestoration não precisa ser desligado: quem rola é o #contentDiv (a janela não rola),
+// então o navegador não tem rolagem de janela para restaurar.
 // Qualquer falha (rede, status ≠ 200, resposta que não é HTML, página sem #contentDiv)
 // cai para a navegação normal com location.assign (location.replace no popstate).
 import NProgress from 'nprogress';
@@ -19,8 +21,13 @@ let currentDoc = '';
 // (ou a URL, para entradas sem state); o Map cobre também a saída por popstate, quando o
 // state da entrada que ficou para trás já não é acessível.
 const scrolls = new Map();
+// Chave da entrada cujo conteúdo está no #contentDiv agora (só muda quando a troca termina):
+// um segundo popstate rápido guarda a rolagem sob ela, não sob a entrada que ainda está carregando.
 let currentKey = '';
 let nextId = 0;
+// Ids únicos entre carregamentos: um contador que recomeça no reload colidiria com ids de
+// entradas mais antigas que continuam no histórico.
+const newId = () => crypto.randomUUID?.() ?? `${Date.now()}-${++nextId}`;
 const entryKey = (state) => state?.id ?? location.href;
 
 function saveScroll() {
@@ -102,7 +109,7 @@ export async function navigate(url, { push = true } = {}) {
     current.innerHTML = fresh.innerHTML;
     document.title = doc.title;
     if (push) {
-      const state = { url: finalUrl.href, id: ++nextId };
+      const state = { url: finalUrl.href, id: newId() };
       if (finalUrl.href === location.href) history.replaceState(state, '', finalUrl.href);
       else history.pushState(state, '', finalUrl.href);
       currentKey = state.id;
@@ -131,7 +138,7 @@ export async function navigate(url, { push = true } = {}) {
 export function initNav() {
   currentDoc = docKey(location.href);
   // A primeira entrada do histórico ganha estado, mas popstate não depende dele (R2.3).
-  const state = { url: location.href, id: ++nextId };
+  const state = { url: location.href, id: newId() };
   history.replaceState(state, '', location.href);
   currentKey = state.id;
 
@@ -145,11 +152,12 @@ export function initNav() {
   });
 
   on(window, 'popstate', (event) => {
-    const leaving = currentKey;
     const content = qs(CONTENT);
-    if (content) scrolls.set(leaving, content.scrollTop);
-    currentKey = entryKey(event.state);
-    if (docKey(location.href) === currentDoc) return; // só o hash mudou
+    if (content) scrolls.set(currentKey, content.scrollTop);
+    if (docKey(location.href) === currentDoc) { // só o hash mudou: o conteúdo é o mesmo
+      currentKey = entryKey(event.state);
+      return;
+    }
     navigate(location.href, { push: false });
   });
 }
