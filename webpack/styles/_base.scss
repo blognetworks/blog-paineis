@@ -1,0 +1,71 @@
+// Reset mínimo, tipografia base, foco/seleção (auditoria §4) e utilitários de que o JS depende.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+:where(a, button, [tabindex="0"]):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.cateNames:focus-visible,
+.tagNames:focus-visible,
+#lineLeft:focus-visible,
+#lineRight:focus-visible,
+#lineSide:focus-visible {
+  outline-offset: -2px;
+}
+
+::selection {
+  color: var(--selection-text);
+  background: var(--selection-bg);
+}
+
+// O JS legado alterna .hidden para filtrar e recolher painéis.
+.hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+// NProgress (barra de carregamento do PJAX) na cor de acento.
+#nprogress .bar {
+  background: var(--accent);
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px var(--accent), 0 0 5px var(--accent);
+}
+
+#nprogress .spinner-icon {
+  border-top-color: var(--accent);
+  border-left-color: var(--accent);
+}
+
+// Botão de ícone genérico (usado por #themeToggle).
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}

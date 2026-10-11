@@ -1,0 +1,20 @@
+// Entrada de estilos da 003-redesign (substitui webpack/sass/main.sass).
+@use "tokens";
+@use "base";
+// Temporário: estrutura de layout dos .sass antigos, sem cores. A Task 3 substitui.
+@use "legacy";
+
+:root {
+  @include tokens.shared;
+  @include tokens.light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include tokens.dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  @include tokens.dark;
+}

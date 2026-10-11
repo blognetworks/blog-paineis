@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
   <meta name="theme-color" content="#ffffff">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- jekyll 404 页面 -->
   {% if page.url == "/404.html" %}
@@ -25,6 +25,8 @@
  
 
   
+  <!-- Pré-pintura do tema: aplica o tema salvo antes do CSS (sem flash). "Sistema" = sem atributo. -->
+  <script>try{var t=localStorage.getItem('blog.theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
   <link rel="stylesheet" href="/js/bundle.css">
   <link rel="stylesheet" href="/css/main.css">
 

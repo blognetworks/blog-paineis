@@ -1,0 +1,130 @@
+// Tokens de design: valores exatos da auditoria (codex-audit.md §2).
+// Aplicados em main.scss: claro em :root, escuro via prefers-color-scheme ou data-theme="dark".
+
+@mixin light {
+  color-scheme: light;
+
+  /* Superfícies */
+  --bg-app: #F3F4F6;
+  --bg-topbar: #F8FAFC;
+  --bg-categories: #F1F5F9;
+  --bg-tags: #F1F5F9;
+  --bg-posts: #F8FAFC;
+  --bg-content: #FFFFFF;
+  --bg-toc: #F8FAFC;
+  --bg-elevated: #FFFFFF;
+  --bg-hover: #E8EDF3;
+  --bg-active: #DBEAFE;
+
+  /* Bordas e controles */
+  --border: #D7DEE7;
+  --border-control: #748092;
+  --divider: #748092;
+
+  /* Texto */
+  --text-primary: #111827;
+  --text-secondary: #475569;
+  --text-tertiary: #596579;
+  --text-on-accent: #FFFFFF;
+
+  /* Interação */
+  --accent: #1D4ED8;
+  --accent-hover: #1E40AF;
+  --accent-soft: #DBEAFE;
+  --link: #1D4ED8;
+  --link-hover: #1E40AF;
+  --focus: #1D4ED8;
+  --selection-bg: #DBEAFE;
+  --selection-text: #111827;
+
+  /* Código */
+  --code-bg: #F6F8FA;
+  --code-text: #24292F;
+  --code-border: #D7DEE7;
+  --code-inline-bg: #F1F5F9;
+  --code-inline-text: #24292F;
+  --code-comment: #59636E;
+  --code-keyword: #174EA6;
+  --code-string: #1D4ED8;
+  --code-number: #334155;
+  --code-function: #1D4ED8;
+  --code-type: #174EA6;
+  --code-constant: #174EA6;
+  --code-attribute: #334155;
+  --code-variable: #24292F;
+  --code-operator: #59636E;
+  --code-punctuation: #59636E;
+  --code-regex: #1D4ED8;
+  --code-error: #24292F;
+  --code-error-bg: #E8EDF3;
+  --code-mark-bg: #DBEAFE;
+  --code-insert-bg: #DBEAFE;
+  --code-delete-bg: #E8EDF3;
+}
+
+@mixin dark {
+  color-scheme: dark;
+
+  /* Superfícies */
+  --bg-app: #0F1218;
+  --bg-topbar: #161B22;
+  --bg-categories: #161B22;
+  --bg-tags: #161B22;
+  --bg-posts: #1B212B;
+  --bg-content: #11161D;
+  --bg-toc: #161B22;
+  --bg-elevated: #1B212B;
+  --bg-hover: #252F3D;
+  --bg-active: #203758;
+
+  /* Bordas e controles */
+  --border: #303A49;
+  --border-control: #7C8DA3;
+  --divider: #7C8DA3;
+
+  /* Texto */
+  --text-primary: #F1F5F9;
+  --text-secondary: #B6C2D2;
+  --text-tertiary: #A1ACBC;
+  --text-on-accent: #11161D;
+
+  /* Interação */
+  --accent: #93C5FD;
+  --accent-hover: #BFDBFE;
+  --accent-soft: #203758;
+  --link: #93C5FD;
+  --link-hover: #BFDBFE;
+  --focus: #93C5FD;
+  --selection-bg: #203758;
+  --selection-text: #F1F5F9;
+
+  /* Código */
+  --code-bg: #161B22;
+  --code-text: #E6EDF3;
+  --code-border: #303A49;
+  --code-inline-bg: #252F3D;
+  --code-inline-text: #E6EDF3;
+  --code-comment: #9DA7B3;
+  --code-keyword: #93C5FD;
+  --code-string: #BFDBFE;
+  --code-number: #CBD5E1;
+  --code-function: #93C5FD;
+  --code-type: #93C5FD;
+  --code-constant: #93C5FD;
+  --code-attribute: #CBD5E1;
+  --code-variable: #E6EDF3;
+  --code-operator: #9DA7B3;
+  --code-punctuation: #9DA7B3;
+  --code-regex: #BFDBFE;
+  --code-error: #E6EDF3;
+  --code-error-bg: #252F3D;
+  --code-mark-bg: #203758;
+  --code-insert-bg: #203758;
+  --code-delete-bg: #252F3D;
+}
+
+@mixin shared {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --topbar-height: 48px;
+}

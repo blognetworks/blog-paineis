@@ -1,0 +1,363 @@
+// PONTE TEMPORÁRIA (Task 2 → substituída na Task 3).
+// Tradução literal para SCSS das regras estruturais que webpack/sass/*.sass emitiam
+// (main, 0-Mobile, 1-Dragbar, 2-Topbar, 6-icon, 7-syntax), sem cores nem família tipográfica.
+// Exceções de cor, só com tokens, para que estados não fiquem invisíveis no tema escuro:
+// a { color: inherit }, .active, hover da navbox e .lineInDiv.
+
+// O reset antigo zerava margem e padding de tudo; o layout depende disso.
+* {
+  padding: 0;
+  margin: 0;
+}
+
+// A matemática do arraste (9dragbar.js) subtrai padding da flex-basis: modelo content-box.
+#cateDiv,
+#tagDiv,
+#filenameDiv,
+#contentDiv,
+#rightNavbar,
+.icon {
+  box-sizing: content-box;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+sup {
+  float: right;
+  font-size: 0.7em;
+}
+
+.active {
+  background-color: var(--bg-active);
+}
+
+// Precisa ser 100%, não 100vh (Safari ao dar zoom).
+#bigDiv {
+  height: 100%;
+}
+
+#arrowNav {
+  width: 90px;
+  height: 30px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+#allCateTagPostBtn {
+  padding: 0;
+  margin: 0;
+}
+
+.sortBtn {
+  width: 30px;
+  height: 30px;
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+
+// Rolável sem barra visível (a Task 3 volta a exibir as barras).
+#catenameUL::-webkit-scrollbar,
+#tagnameUL::-webkit-scrollbar,
+#filenameUL::-webkit-scrollbar,
+#rightNavbar::-webkit-scrollbar,
+#pageContent::-webkit-scrollbar,
+#contentDiv::-webkit-scrollbar {
+  display: none;
+}
+
+#tagnameUL,
+#filenameUL {
+  overflow-x: hidden;
+}
+
+#OuterFilenameUL {
+  position: relative;
+  overflow: hidden;
+}
+
+#filenameDiSearch {
+  position: absolute;
+  left: 0%;
+  top: 0;
+}
+
+#allCateTagPostBtn {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, 0);
+}
+
+#filenameDivDate {
+  position: absolute;
+  right: 0%;
+  top: 0;
+}
+
+#topbarDiv {
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+
+  i {
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+}
+
+// Layout vertical: absolute com top/bottom/left/right simultâneos.
+#Div {
+  display: flex;
+  position: absolute;
+  top: 30px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.cateNames,
+.tagNames,
+.postNames {
+  padding: 2px 0;
+}
+
+#cateDiv {
+  flex-basis: 83px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  max-width: 300px;
+  min-width: 14px;
+  position: relative;
+  padding: 0 4px 4px 4px;
+}
+
+#tagDiv {
+  flex-basis: 100px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  max-width: 300px;
+  min-width: 48px;
+  position: relative;
+  padding: 0 0 4px 4px;
+}
+
+#filenameDiv {
+  flex-basis: 219px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  max-width: 1450px;
+  min-width: 188px;
+  position: relative;
+  padding: 4px 0 4px 0;
+}
+
+#contentDiv {
+  flex-grow: 1;
+  flex-shrink: 1;
+  padding: 5px;
+  flex-basis: 150px;
+  overflow: scroll;
+}
+
+#pageContent {
+  overflow-x: scroll;
+  word-wrap: break-word;
+  word-break: normal;
+}
+
+#rightNavbar {
+  flex-grow: 0;
+  flex-shrink: 0;
+  height: 100%;
+  flex-basis: 90px;
+  font-size: 0.8em;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  white-space: nowrap;
+}
+
+// 0-Mobile.sass — reproduz o CSS que o Sass de fato emitia: no bloco de 414px, um comentário
+// na coluna 0 encerrava o @media, e as regras seguintes (#filenameDiv… e #filenameDivDate)
+// nunca chegaram ao CSS. O bloco de 700px cobre essas larguras de qualquer forma.
+@media screen and (max-width: 414px) {
+  html,
+  body {
+    overflow: hidden;
+    height: 100%;
+  }
+
+  #cateDiv,
+  #tagDiv {
+    display: none;
+    flex-basis: 88px;
+  }
+
+  .cateSup,
+  .tagSup {
+    display: none;
+  }
+
+  #lineLeft,
+  #lineRight,
+  #lineSide {
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  #cateDiv,
+  #tagDiv {
+    display: none;
+    flex-basis: 88px;
+  }
+
+  .cateSup,
+  .tagSup {
+    display: none;
+  }
+
+  #lineLeft,
+  #lineRight,
+  #lineSide {
+    display: none !important;
+  }
+
+  #filenameDiv,
+  #rightNavbar,
+  #arrowNav,
+  #donate,
+  #githubReadme,
+  #githubHome,
+  #GithubStar {
+    display: none;
+  }
+
+  #filenameDivDate {
+    position: absolute;
+    right: 6%;
+    top: 0;
+  }
+}
+
+// 1-Dragbar.sass
+.lineFlex {
+  display: flex;
+  height: 100%;
+  width: 10px;
+}
+
+.lineInDiv {
+  flex-basis: 2px;
+  height: 100%;
+  background-color: var(--divider);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#lineLeft,
+#lineRight,
+#lineSide {
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+#lineLeft-left,
+#lineLeft-right,
+#lineRight-left,
+#lineRight-right,
+#lineSide-left,
+#lineSide-right {
+  flex-basis: 50%;
+  height: 100%;
+}
+
+// 2-Topbar.sass
+#topbarLeft,
+#topbarRight {
+  flex-basis: 150px;
+}
+
+.navbox {
+  height: 30px;
+  display: inline-block;
+
+  > ul > li {
+    float: left;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  ul li a {
+    display: block;
+    cursor: pointer;
+    height: 30px;
+
+    &:hover {
+      text-decoration: none;
+      background: var(--bg-hover);
+    }
+  }
+}
+
+.subnav,
+.threenav {
+  display: none;
+}
+
+.navbox ul li:hover .subnav {
+  display: block;
+}
+
+.subnav > li {
+  position: relative;
+}
+
+.threenav {
+  position: relative;
+  left: 100%;
+  top: -30px;
+}
+
+.subnav li:hover .threenav {
+  display: block;
+}
+
+// 6-icon.sass (.iconfont e .gh-btn não têm mais uso: iconfont removido na Task 1)
+.icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  overflow: hidden;
+  font-size: 25px;
+  padding: 2.5px;
+}
+
+// 7-syntax.sass (só espaçamento; cores do código ficam para a Task 3)
+.highlight {
+  table td {
+    padding: 5px;
+  }
+
+  table pre {
+    margin: 0;
+  }
+}
+
+// Botão de tema no grupo direito da barra (flutua como os demais controles desse grupo).
+#topbarRight #themeToggle {
+  float: right;
+  height: 30px;
+  padding: 0 7px;
+}

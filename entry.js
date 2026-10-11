@@ -4,6 +4,18 @@ import 'jquery-pjax';
 import 'jquery-lazyload';
 import 'nprogress/nprogress.css';
 
+// Fontes locais (Fontsource): o esbuild emite os .woff/.woff2 em src/js/fonts/.
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/400-italic.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/400-italic.css';
+import '@fontsource/jetbrains-mono/600.css';
+
+import './webpack/js/theme.js';
+
 import './webpack/js/0filter&highlight.js';
 import './webpack/js/5mobile.js';
 import './webpack/js/7structurebar(pjax).js';
