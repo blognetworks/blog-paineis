@@ -40,8 +40,9 @@ function toggleMobile(className, panels) {
 
 export function toggleNav() {
   if (isMobile()) return toggleMobile(NAV_OPEN, NAV_PANELS);
+  // Desktop (paridade com o legado): o sumário e #lineSide acompanham os painéis de navegação.
   const allHidden = ['#cateDiv', '#tagDiv', '#filenameDiv'].every((sel) => isHidden(qs(sel)));
-  setAll(NAV_PANELS, !allHidden);
+  setAll([...NAV_PANELS, ...TOC_PANELS], !allHidden);
 }
 
 export function toggleToc() {

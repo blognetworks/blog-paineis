@@ -240,24 +240,32 @@ test.describe('painéis e atalhos', () => {
   const semDisplayInline = (page, ids) =>
     page.evaluate((sels) => sels.filter((s) => document.querySelector(s).style.display !== ''), ids);
 
-  test('#topbarToggle esconde e mostra os três painéis e os dois divisores por classe', async ({ page }) => {
+  test('#topbarToggle esconde e mostra os três painéis, os divisores e o sumário por classe', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    for (const id of NAV) await expect(page.locator(id), id).toBeVisible();
+    const TODOS = [...NAV, '#rightNavbar', '#lineSide'];
+    for (const id of TODOS) await expect(page.locator(id), id).toBeVisible();
 
     await page.locator('#topbarToggle').click();
-    for (const id of NAV) {
+    for (const id of TODOS) {
       await expect(page.locator(id), id).toHaveClass(/\bis-hidden\b/);
       await expect(page.locator(id), id).toBeHidden();
     }
     await expect(page.locator('#contentDiv')).toBeVisible();
 
     await page.locator('#topbarToggle').click();
-    for (const id of NAV) {
+    for (const id of TODOS) {
       await expect(page.locator(id), id).not.toHaveClass(/\bis-hidden\b/);
       await expect(page.locator(id), id).toBeVisible();
     }
-    expect(await semDisplayInline(page, [...NAV, '#rightNavbar', '#lineSide'])).toEqual([]);
+
+    // Depois disso, #topbarStructureToggle continua alternando só o sumário.
+    await page.locator('#topbarStructureToggle').click();
+    for (const id of ['#rightNavbar', '#lineSide']) await expect(page.locator(id), id).toBeHidden();
+    for (const id of NAV) await expect(page.locator(id), id).toBeVisible();
+    await page.locator('#topbarStructureToggle').click();
+    for (const id of ['#rightNavbar', '#lineSide']) await expect(page.locator(id), id).toBeVisible();
+    expect(await semDisplayInline(page, TODOS)).toEqual([]);
   });
 
   test('#topbarStructureToggle alterna o sumário e #lineSide', async ({ page }) => {

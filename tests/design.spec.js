@@ -187,7 +187,6 @@ test.describe('mobile 390×844', () => {
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
     // O fim de cada lista do navegador é alcançável dentro da tela.
-    await page.waitForTimeout(200); // animação .show(100)
     for (const list of ['#filenameUL', '#catenameUL', '#tagnameUL']) {
       const r = await page.locator(list).evaluate((ul) => {
         ul.scrollTop = ul.scrollHeight;
