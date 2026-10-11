@@ -33,11 +33,26 @@ export function shouldIntercept(event, link) {
   if (!(link instanceof HTMLAnchorElement)) return false; // <a> de SVG etc.
   if (link.hasAttribute('target') || link.hasAttribute('download')) return false;
   if (link.getAttribute('rel')?.split(/\s+/).includes('external')) return false;
+  if (link.getAttribute('href')?.startsWith('#')) return false; // âncora local, inclusive "#"
 
   const url = new URL(link.href, location.href);
   if (url.origin !== location.origin) return false; // externo, mailto:, tel:, javascript:
   if (url.hash && docKey(url) === docKey(location.href)) return false; // âncora na mesma página
   return isHtmlPath(url.pathname);
+}
+
+// Depois da troca: anuncia o novo título na região viva #navStatus (fora do #contentDiv) e, se o
+// foco se perdeu (estava num elemento substituído, ex.: #nextPost, ou já no body), leva-o ao
+// título da página. Foco num elemento que continua na página (ex.: link da lista de posts) fica.
+function announce(title) {
+  const status = qs('#navStatus');
+  if (status) status.textContent = title;
+  const active = document.activeElement;
+  if (active && active !== document.body && active.isConnected) return;
+  const heading = qs('#pageContent h1') || qs('#pageContent .post-title, #pageContent .page-heading');
+  if (!heading) return;
+  if (!heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+  heading.focus({ preventScroll: true });
 }
 
 function emit(type, url) {
@@ -80,6 +95,7 @@ export async function navigate(url, { push = true } = {}) {
     const anchor = finalUrl.hash && document.getElementById(decodeURIComponent(finalUrl.hash.slice(1)));
     if (anchor) anchor.scrollIntoView();
     else current.scrollTop = 0;
+    announce(document.title);
 
     emit('nav:end', finalUrl.href);
   } catch (err) {

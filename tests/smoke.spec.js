@@ -50,7 +50,7 @@ test('clicar numa tag filtra posts e destaca a categoria', async ({ page }) => {
   await expect(page.locator('li.postNames:visible')).toHaveCount(2);
 });
 
-test('clicar num post navega via PJAX, sem recarga, e destaca tag e categoria', async ({ page }) => {
+test('clicar num post navega via navegação parcial, sem recarga, e destaca tag e categoria', async ({ page }) => {
   const errors = trackErrors(page);
   await page.goto('/');
   await page.evaluate(() => { window.__semRecarga = true; });

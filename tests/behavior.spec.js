@@ -543,3 +543,165 @@ test.describe('aceite final', () => {
     await expect(page.locator('#mobile [onclick]')).toHaveCount(0);
   });
 });
+
+// Revisão final (002): atalhos com foco em link, foco e anúncio após navegação parcial,
+// breakpoint (larguras e painéis), âncoras "#", sumário inicial, aria-expanded e histórico.
+test.describe('revisão final', () => {
+  const basis = (page, sel) => page.locator(sel).evaluate((el) => parseFloat(getComputedStyle(el).flexBasis));
+  const primeiroPost = async (page) => {
+    await page.goto('/');
+    return page.locator('#filenameUL a').first().getAttribute('href');
+  };
+
+  test('atalho ← funciona com foco num link de post da lista (R5.5)', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const link = page.locator('#filenameUL a').first();
+    await link.click();
+    await expect(page.locator('#pageContent h1.post-title')).toBeVisible();
+    // Clique do mouse na lista: o foco continua no link (não é roubado pelo título).
+    await expect(link).toBeFocused();
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.locator('#cateDiv')).toBeHidden();
+  });
+
+  test('Enter em #nextPost leva o foco ao título novo e anuncia o título em #navStatus', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(await primeiroPost(page));
+    const status = page.locator('#navStatus');
+    await expect(status).toHaveAttribute('role', 'status');
+    await expect(status).toHaveAttribute('aria-live', 'polite');
+    await expect(status).toHaveClass(/\bvisually-hidden\b/);
+    expect(await status.evaluate((el) => el.closest('#contentDiv'))).toBeNull();
+
+    const href = await page.locator('#nextPost').getAttribute('href');
+    await page.locator('#nextPost').focus();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(new RegExp(escapeRe(href) + '$'));
+    const titulo = page.locator('#pageContent h1');
+    await expect(titulo).toBeFocused();
+    await expect(titulo).toHaveAttribute('tabindex', '-1');
+    await expect(status).toHaveText(await page.title());
+    // Com o foco no título, os atalhos continuam valendo.
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.locator('#cateDiv')).toBeHidden();
+  });
+
+  test('largura ajustada no desktop não vale no mobile: tags voltam a 88px', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const header = page.locator('#tagDiv > .panel-header');
+    await header.hover();
+    await header.getByRole('button', { name: 'Aumentar largura das tags' }).click();
+    expect(await basis(page, '#tagDiv')).toBe(144);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#topbarToggle').click();
+    await expect(page.locator('#tagDiv')).toBeVisible();
+    expect(await basis(page, '#tagDiv')).toBe(88);
+    expect(await page.locator('#tagDiv').evaluate((el) => el.style.flexBasis)).toBe('');
+    await expect(page.locator('#lineLeft')).toHaveAttribute('aria-valuenow', '128');
+  });
+
+  test('troca de breakpoint: navegador mobile abre com os três painéis e fecha ao ir para o desktop', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    const div = page.locator('#Div');
+    await page.locator('#topbarToggle').click();
+    await expect(div).toHaveClass(/\bis-nav-open\b/);
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(div).not.toHaveClass(/\bis-nav-open\b/);
+    await page.evaluate(() => document.activeElement?.blur());
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.locator('#cateDiv')).toBeHidden();
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(div).not.toHaveClass(/\bis-nav-open\b/);
+    await page.locator('#topbarToggle').click();
+    await expect(div).toHaveClass(/\bis-nav-open\b/);
+    for (const id of ['#cateDiv', '#tagDiv', '#filenameDiv']) await expect(page.locator(id), id).toBeVisible();
+  });
+
+  test('link com href="#" não é interceptado nem busca a página', async ({ page }) => {
+    await page.goto('/');
+    const buscas = [];
+    page.on('request', (r) => { if (r.resourceType() === 'fetch') buscas.push(r.url()); });
+    await page.evaluate(() => {
+      const a = document.createElement('a');
+      a.id = 'ancoraVazia';
+      a.setAttribute('href', '#');
+      a.textContent = 'âncora vazia';
+      document.getElementById('pageContent').prepend(a);
+    });
+    await page.locator('#ancoraVazia').click();
+    await page.waitForTimeout(300);
+    expect(buscas).toEqual([]);
+    await expect(page.locator('#ancoraVazia')).toBeAttached();
+  });
+
+  test('sumário já destaca um item ao carregar e após a navegação parcial', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(await primeiroPost(page));
+    await expect(page.locator('#MDh1 [aria-current="location"]')).toHaveCount(1);
+    await page.locator('#nextPost').click();
+    await expect(page.locator('#MDh1 > li').first()).toBeAttached();
+    await expect(page.locator('#MDh1 [aria-current="location"]')).toHaveCount(1);
+  });
+
+  test('botões da barra têm aria-controls e aria-expanded sincronizado', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const nav = page.locator('#topbarToggle');
+    const toc = page.locator('#topbarStructureToggle');
+    await expect(nav).toHaveAttribute('aria-controls', 'cateDiv tagDiv filenameDiv');
+    await expect(toc).toHaveAttribute('aria-controls', 'rightNavbar');
+
+    await expect(nav).toHaveAttribute('aria-expanded', 'true');
+    await expect(toc).toHaveAttribute('aria-expanded', 'true');
+    await nav.click();
+    await expect(nav).toHaveAttribute('aria-expanded', 'false');
+    await expect(toc).toHaveAttribute('aria-expanded', 'false');
+    await nav.click();
+    await expect(nav).toHaveAttribute('aria-expanded', 'true');
+    await toc.click();
+    await expect(toc).toHaveAttribute('aria-expanded', 'false');
+    await toc.click();
+    await expect(toc).toHaveAttribute('aria-expanded', 'true');
+    for (let i = 0; i < 3; i++) await page.locator('#leftBtn').click();
+    await expect(nav).toHaveAttribute('aria-expanded', 'false');
+    await page.locator('#rightBtn').click();
+    await expect(nav).toHaveAttribute('aria-expanded', 'true');
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(nav).toHaveAttribute('aria-expanded', 'false');
+    await expect(toc).toHaveAttribute('aria-expanded', 'false');
+    await nav.click();
+    await expect(nav).toHaveAttribute('aria-expanded', 'true');
+    await nav.click();
+    await expect(nav).toHaveAttribute('aria-expanded', 'false');
+    await toc.click();
+    await expect(toc).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  test('post → post → voltar restaura o primeiro post', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => { window.__semRecarga = true; });
+    const link = page.locator('#filenameUL a').first();
+    const hrefA = await link.getAttribute('href');
+    await link.click();
+    await expect(page).toHaveURL(new RegExp(escapeRe(hrefA) + '$'));
+    const tituloA = (await page.locator('#pageContent h1.post-title').textContent()).trim();
+
+    const hrefB = await page.locator('#nextPost').getAttribute('href');
+    await page.locator('#nextPost').click();
+    await expect(page).toHaveURL(new RegExp(escapeRe(hrefB) + '$'));
+    await expect(page.locator('#pageContent h1.post-title')).not.toHaveText(tituloA);
+
+    await page.goBack();
+    await expect(page).toHaveURL(new RegExp(escapeRe(hrefA) + '$'));
+    await expect(page.locator('#pageContent h1.post-title')).toHaveText(tituloA);
+    await expect(page).toHaveTitle(tituloA);
+    expect(await page.evaluate(() => window.__semRecarga)).toBe(true);
+  });
+});

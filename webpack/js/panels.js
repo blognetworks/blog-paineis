@@ -2,7 +2,7 @@
 // Desktop: `.is-hidden` (_base.scss) em cada painel e divisor.
 // Mobile (MOBILE_QUERY): `#Div.is-nav-open` mostra o navegador (categorias, tags e posts) no
 // lugar do artigo e `#Div.is-toc-open` sobrepõe o sumário (_mobile.scss).
-import { on, qs, isMobile } from './dom.js';
+import { on, qs, isMobile, MOBILE_QUERY } from './dom.js';
 import { navigate } from './nav.js';
 
 const NAV_PANELS = ['#cateDiv', '#tagDiv', '#filenameDiv', '#lineLeft', '#lineRight'];
@@ -38,26 +38,45 @@ function toggleMobile(className, panels) {
   div.classList.toggle(className, open);
 }
 
+// aria-expanded dos botões da barra (aria-controls vem do topbar.html). Desktop: verdadeiro com
+// algum painel de navegação / o sumário visível; mobile: reflete is-nav-open / is-toc-open.
+export function syncExpanded() {
+  const div = root();
+  const mobile = isMobile();
+  const navOpen = mobile
+    ? !!div?.classList.contains(NAV_OPEN)
+    : !['#cateDiv', '#tagDiv', '#filenameDiv'].every((sel) => isHidden(qs(sel)));
+  const tocOpen = mobile ? !!div?.classList.contains(TOC_OPEN) : !isHidden(qs('#rightNavbar'));
+  qs('#topbarToggle')?.setAttribute('aria-expanded', String(navOpen));
+  qs('#topbarStructureToggle')?.setAttribute('aria-expanded', String(tocOpen));
+}
+
 export function toggleNav() {
-  if (isMobile()) return toggleMobile(NAV_OPEN, NAV_PANELS);
-  // Desktop (paridade com o legado): o sumário e #lineSide acompanham os painéis de navegação.
-  const allHidden = ['#cateDiv', '#tagDiv', '#filenameDiv'].every((sel) => isHidden(qs(sel)));
-  setAll([...NAV_PANELS, ...TOC_PANELS], !allHidden);
+  if (isMobile()) toggleMobile(NAV_OPEN, NAV_PANELS);
+  else {
+    // Desktop (paridade com o legado): o sumário e #lineSide acompanham os painéis de navegação.
+    const allHidden = ['#cateDiv', '#tagDiv', '#filenameDiv'].every((sel) => isHidden(qs(sel)));
+    setAll([...NAV_PANELS, ...TOC_PANELS], !allHidden);
+  }
+  syncExpanded();
 }
 
 export function toggleToc() {
-  if (isMobile()) return toggleMobile(TOC_OPEN, TOC_PANELS);
-  setAll(TOC_PANELS, !isHidden(qs('#rightNavbar')));
+  if (isMobile()) toggleMobile(TOC_OPEN, TOC_PANELS);
+  else setAll(TOC_PANELS, !isHidden(qs('#rightNavbar')));
+  syncExpanded();
 }
 
 export function collapseNext() {
   const step = COLLAPSE_STEPS.find(([panel]) => !isHidden(qs(panel)));
   if (step) setAll(step, true);
+  syncExpanded();
 }
 
 export function restoreNext() {
   const step = [...COLLAPSE_STEPS].reverse().find(([panel]) => isHidden(qs(panel)));
   if (step) setAll(step, false);
+  syncExpanded();
 }
 
 export function toTop() {
@@ -69,6 +88,7 @@ export function toTop() {
 // No desktop essas classes não têm efeito.
 export function closeMobileNav() {
   root()?.classList.remove(NAV_OPEN, TOC_OPEN);
+  syncExpanded();
 }
 
 // Sem destino (primeiro/último post, home): botão com aria-disabled="true" e o clique não faz nada.
@@ -88,6 +108,14 @@ export function initPanels() {
       if (link) navigate(link.href);
     });
   }
+
+  // Troca de breakpoint: fecha o navegador/sumário do mobile e, ao entrar no mobile, limpa o
+  // .is-hidden deixado pelo desktop, para o navegador nunca abrir sem categorias.
+  window.matchMedia(MOBILE_QUERY).addEventListener('change', (event) => {
+    if (event.matches) setAll(NAV_PANELS, false);
+    closeMobileNav();
+  });
+  syncExpanded();
 
   const actions = {
     '#topbarToggle': toggleNav,

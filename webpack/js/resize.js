@@ -2,7 +2,7 @@
 // ajusta a largura do painel que controla por ponteiro, teclado (← → 16px, Home restaura) e pelos
 // botões ± dos cabeçalhos (alternativa de um só ponteiro ao arraste, WCAG 2.5.7).
 // A largura vai em `style.flexBasis`, o único estilo inline permitido; o CSS dá a largura inicial.
-import { on, qs } from './dom.js';
+import { on, qs, MOBILE_QUERY } from './dom.js';
 
 // side: lado do divisor em que fica o painel. 'left' = o painel cresce quando o divisor vai para
 // a direita; 'right' (#lineSide fica à esquerda do sumário) = cresce quando vai para a esquerda.
@@ -96,6 +96,18 @@ export function initResize() {
     sep.addEventListener('keydown', (event) => onKeydown(event, id));
     sep.addEventListener('pointerdown', (event) => onPointerdown(event, sep, id));
   }
+
+  // Ao entrar no mobile, a largura inline do desktop venceria as larguras do _mobile.scss:
+  // volta à largura do CSS (e ao valor inicial no aria-valuenow).
+  const media = window.matchMedia(MOBILE_QUERY);
+  media.addEventListener('change', (event) => {
+    if (!event.matches) return;
+    for (const [id, cfg] of Object.entries(PANELS)) {
+      const panel = qs(cfg.target);
+      if (panel) panel.style.removeProperty('flex-basis');
+      syncAria(id, cfg.initial);
+    }
+  });
 
   on(document, 'click', '[data-resize]', (event, btn) => {
     if (btn.getAttribute('aria-disabled') === 'true') return; // no limite: nada a fazer

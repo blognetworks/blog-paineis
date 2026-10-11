@@ -35,6 +35,7 @@ export function buildToc() {
     return li;
   });
   list.replaceChildren(...items);
+  highlight(); // o primeiro item visível já sai destacado no carregamento e na navegação
 }
 
 // Destaca o primeiro título com topo ≥ 0 (o primeiro visível do topo para baixo).

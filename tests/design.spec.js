@@ -67,7 +67,7 @@ test.describe('tema', () => {
     expect(await bgApp(page)).toBe('#0f1218');
   });
 
-  test('tema escuro sobrevive à navegação PJAX e o botão continua funcional', async ({ page }) => {
+  test('tema escuro sobrevive à navegação parcial e o botão continua funcional', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
     await page.goto('/');
     await page.evaluate(() => { window.__semRecarga = true; });
