@@ -3,11 +3,15 @@ import { initNav } from './nav.js';
 import { buildToc, initTocSpy } from './toc.js';
 import { initPanels, syncTopbarNav } from './panels.js';
 import { registerSW } from './sw-register.js';
+import { initFilter } from './filter.js';
+import { initDates } from './dates.js';
 
 function init() {
   initNav();
   initPanels();
   initTocSpy();
+  initFilter();
+  initDates();
 
   // Carregamento inicial e cada navegação parcial.
   buildToc();

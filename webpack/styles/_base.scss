@@ -66,8 +66,7 @@ body {
 }
 
 // Controle de ícone: alvo de 32×32px, ícone de 18px (auditoria §4 "Barra superior").
-.icon-button,
-.icon-control {
+.icon-button {
   width: 32px;
   height: 32px;
   flex: none;
@@ -100,9 +99,4 @@ body {
       background: transparent;
     }
   }
-}
-
-// O próprio <svg> é o controle (o JS troca o <use> dentro dele): padding centraliza 18px em 32px.
-.icon-control {
-  padding: 7px;
 }

@@ -54,7 +54,7 @@ test('clicar num post navega via PJAX, sem recarga, e destaca tag e categoria', 
   await page.evaluate(() => { window.__semRecarga = true; });
   const first = page.locator('#filenameUL a').first();
   const href = await first.getAttribute('href');
-  await first.locator('li.postNames').click();
+  await page.locator('#filenameUL li.postNames').first().click(); // li.postNames > a (002, R5.2)
   await expect(page).toHaveURL(new RegExp(href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
   await expect(page.locator('#pageContent h2').first()).toBeVisible();
   expect(await page.evaluate(() => window.__semRecarga)).toBe(true);

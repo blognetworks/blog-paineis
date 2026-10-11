@@ -6,7 +6,7 @@
         {% for someCate in site.categories %}
             {% assign cateClicked = someCate | first %}    
             {% assign catePosts = someCate | last %}
-                <li id="{{cateClicked}}" class="cateNames"><span>{{ cateClicked }}</span><sup class="cateSup">{{catePosts | size }}</sup></li>
+                <li id="{{cateClicked}}" class="cateNames" tabindex="0"><span>{{ cateClicked }}</span><sup class="cateSup">{{catePosts | size }}</sup></li>
         {% endfor %}
     </ul>   
 </div>
@@ -19,7 +19,7 @@
         {% for tag in site.tags %}
             {% assign t = tag | first %}
             {% assign files = tag | last %}
-              <li class="tagNames" id="Tag{{ t }}" data-tagcate="{{ files[0].categories }}"><span>{{ t }}</span><sup class="tagSup">{{files | size}}</sup></li>
+              <li class="tagNames" id="Tag{{ t }}" data-tagcate="{{ files[0].categories }}" tabindex="0"><span>{{ t }}</span><sup class="tagSup">{{files | size}}</sup></li>
         {% endfor %}
     </ul>
 </div>
@@ -40,23 +40,22 @@
       <svg class="icon" aria-hidden="true" id="filenameDiSearch">
         <use xlink:href="#i-search"></use>
       </svg>
-		  <a href id="allCateTagPostBtn" aria-label="Mostrar todas as categorias, tags e posts" title="Mostrar todas as categorias, tags e posts">
-			  <!-- 这个函数 在 9showAll(eye).js 里面 -->
+		  <button type="button" id="allCateTagPostBtn" aria-label="Mostrar todas as categorias, tags e posts" title="Mostrar todas as categorias, tags e posts">
+			  <!-- showAll() em webpack/js/filter.js -->
         <span class="count-pair"><svg class="icon" aria-hidden="true"><use xlink:href="#i-folder"></use></svg><sup>{{site.categories | size }}</sup></span>
         <span class="count-pair"><svg class="icon" aria-hidden="true"><use xlink:href="#i-tags"></use></svg><sup>{{site.tags | size }}</sup></span>
         <span class="count-pair"><svg class="icon" aria-hidden="true"><use xlink:href="#i-file-text"></use></svg><sup>{{site.posts | size }}</sup></span>
-			</a>
-        <svg class="icon icon-control" id="filenameDivDate" role="button" aria-label="Mostrar ou ocultar datas">
-          <use xlink:href="#icon-eyeblocked"></use>
-        </svg>
-        <!-- 这个显隐函数 在 9showAll(eye).js 里 -->
+			</button>
+        <!-- initDates() em webpack/js/dates.js troca o <use> dentro do botão. -->
+        <button type="button" class="icon-button" id="filenameDivDate" aria-pressed="false" aria-label="Mostrar ou ocultar datas" title="Mostrar ou ocultar datas">
+          <svg class="icon" aria-hidden="true"><use href="#icon-eyeblocked"></use></svg>
+        </button>
 		</div>
 		<ul id="filenameUL">
 			{% for post in site.posts reversed %}
-      <a href="{{ post.url }}">
-				<li class="postNames" data-cate="{{post.categories}}" data-tag="{{post.tags}}">
-					 {{ post.title }}<sup class="fileNameDate hidden">{{ post.date | date: "%Y-%m-%d" }}</sup>
-			</li></a>
+			<li class="postNames" data-cate="{{post.categories}}" data-tag="{{post.tags}}">
+				<a href="{{ post.url }}">{{ post.title }}<sup class="fileNameDate hidden">{{ post.date | date: "%Y-%m-%d" }}</sup></a>
+			</li>
 			{% endfor %}
 		</ul>
 	</div>

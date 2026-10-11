@@ -1,5 +1,5 @@
 // Painéis de categorias, tags e posts (auditoria §4 "Itens", "Contadores <sup>").
-// O filtro lê children('span') de .cateNames/.tagNames: nada entre o li e o span.
+// O filtro (filter.js) lê o span filho direto de .cateNames/.tagNames: nada entre o li e o span.
 
 #catenameUL,
 #tagnameUL,
@@ -69,14 +69,23 @@
   box-shadow: inset 3px 0 var(--accent);
 }
 
-#filenameUL > a {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-}
-
+// Post: li.postNames > a (R5.2). O link ocupa a linha inteira e recebe o espaçamento do item,
+// para que toda a área clicável navegue.
 .postNames {
   display: block;
+  padding: 0;
+
+  > a {
+    display: block;
+    min-height: 32px;
+    padding: 6px 8px;
+    color: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+  }
 }
 
 // Contadores da interface (não afeta sobrescritos do artigo).
@@ -128,8 +137,12 @@
   align-items: center;
   gap: 6px;
   padding: 4px 6px;
+  border: 0;
   border-radius: 6px;
   color: var(--text-secondary);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
   text-decoration: none;
 
   &:hover {
