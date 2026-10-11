@@ -1,7 +1,9 @@
 // Navegação parcial (substitui o jquery-pjax): fetch + DOMParser troca só o #contentDiv,
 // atualiza document.title e a URL (history), e avisa os outros módulos com eventos em document:
 //   nav:start  { detail: { url } }
-//   nav:end    { detail: { url } }
+//   nav:end    { detail: { url, restored } }  (restored: a rolagem da entrada foi restaurada no voltar/avançar)
+// history.scrollRestoration não precisa ser desligado: quem rola é o #contentDiv (a janela não rola),
+// então o navegador não tem rolagem de janela para restaurar.
 // Qualquer falha (rede, status ≠ 200, resposta que não é HTML, página sem #contentDiv)
 // cai para a navegação normal com location.assign (location.replace no popstate).
 import NProgress from 'nprogress';
@@ -15,6 +17,25 @@ let controller = null;
 // Documento carregado no #contentDiv (sem o hash): popstate só busca quando ele muda,
 // para que voltar de uma âncora do sumário não recarregue a página.
 let currentDoc = '';
+// Rolagem do #contentDiv por entrada do histórico. A chave é o id guardado no state da entrada
+// (ou a URL, para entradas sem state); o Map cobre também a saída por popstate, quando o
+// state da entrada que ficou para trás já não é acessível.
+const scrolls = new Map();
+// Chave da entrada cujo conteúdo está no #contentDiv agora (só muda quando a troca termina):
+// um segundo popstate rápido guarda a rolagem sob ela, não sob a entrada que ainda está carregando.
+let currentKey = '';
+let nextId = 0;
+// Ids únicos entre carregamentos: um contador que recomeça no reload colidiria com ids de
+// entradas mais antigas que continuam no histórico.
+const newId = () => crypto.randomUUID?.() ?? `${Date.now()}-${++nextId}`;
+const entryKey = (state) => state?.id ?? location.href;
+
+function saveScroll() {
+  const content = qs(CONTENT);
+  if (!content) return;
+  scrolls.set(currentKey, content.scrollTop);
+  if (history.state?.id) history.replaceState({ ...history.state, scrollTop: content.scrollTop }, '');
+}
 
 const docKey = (url) => {
   const u = new URL(url, location.href);
@@ -64,6 +85,7 @@ export async function navigate(url, { push = true } = {}) {
   controller?.abort();
   const ctrl = new AbortController();
   controller = ctrl;
+  if (push) saveScroll();
   emit('nav:start', target.href);
 
   try {
@@ -87,17 +109,22 @@ export async function navigate(url, { push = true } = {}) {
     current.innerHTML = fresh.innerHTML;
     document.title = doc.title;
     if (push) {
-      if (finalUrl.href === location.href) history.replaceState({ url: finalUrl.href }, '', finalUrl.href);
-      else history.pushState({ url: finalUrl.href }, '', finalUrl.href);
+      const state = { url: finalUrl.href, id: newId() };
+      if (finalUrl.href === location.href) history.replaceState(state, '', finalUrl.href);
+      else history.pushState(state, '', finalUrl.href);
+      currentKey = state.id;
+    } else {
+      currentKey = entryKey(history.state);
     }
     currentDoc = docKey(finalUrl.href);
 
-    const anchor = finalUrl.hash && document.getElementById(decodeURIComponent(finalUrl.hash.slice(1)));
-    if (anchor) anchor.scrollIntoView();
-    else current.scrollTop = 0;
+    // Voltar/avançar restaura a rolagem da entrada; navegação nova começa no topo e a âncora
+    // (hash) é aplicada pelo main.js depois que o sumário cria os <a name>.
+    const restored = push ? undefined : scrolls.get(currentKey) ?? history.state?.scrollTop;
+    current.scrollTop = restored ?? 0;
     announce(document.title);
 
-    emit('nav:end', finalUrl.href);
+    document.dispatchEvent(new CustomEvent('nav:end', { detail: { url: finalUrl.href, restored: restored !== undefined } }));
   } catch (err) {
     if (err?.name === 'AbortError') return;
     // No popstate (push = false) a URL já está no histórico: replace evita uma entrada duplicada.
@@ -111,7 +138,9 @@ export async function navigate(url, { push = true } = {}) {
 export function initNav() {
   currentDoc = docKey(location.href);
   // A primeira entrada do histórico ganha estado, mas popstate não depende dele (R2.3).
-  history.replaceState({ url: location.href }, '', location.href);
+  const state = { url: location.href, id: newId() };
+  history.replaceState(state, '', location.href);
+  currentKey = state.id;
 
   on(document, 'nav:start', () => NProgress.start());
   on(document, 'nav:end', () => NProgress.done());
@@ -122,8 +151,13 @@ export function initNav() {
     navigate(link.href);
   });
 
-  on(window, 'popstate', () => {
-    if (docKey(location.href) === currentDoc) return; // só o hash mudou
+  on(window, 'popstate', (event) => {
+    const content = qs(CONTENT);
+    if (content) scrolls.set(currentKey, content.scrollTop);
+    if (docKey(location.href) === currentDoc) { // só o hash mudou: o conteúdo é o mesmo
+      currentKey = entryKey(event.state);
+      return;
+    }
     navigate(location.href, { push: false });
   });
 }
