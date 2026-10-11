@@ -1,5 +1,8 @@
 
 
+// Títulos do artigo que entram no sumário (todos os níveis escopados em #pageContent).
+var TOC_HEADINGS = "#pageContent h2, #pageContent h3, #pageContent h4, #pageContent h5, #pageContent h6";
+
 // 显示文章结构侧边栏
 function showSideStructure(){
   var MDh1 = $("#pageContent h1").text();
@@ -7,10 +10,10 @@ function showSideStructure(){
     //console.log("MDh1= " +MDh1);
   $("#MDh1 li").each( function(){    $(this).remove();         });
     // 首先点击文件名 删除清空所有现有的 li
-  var titleNum = $("#pageContent h2,h3,h4,h5,h6 ").length;
+  var titleNum = $(TOC_HEADINGS).length;
     // console.log(titleNum );
     // 这里 所有的 title数量就出来了. 下面进行循环. 给每个title 一个 index; 
-  $("#pageContent h2,h3,h4,h5,h6 ").each( function(){
+  $(TOC_HEADINGS).each( function(){
     var MDTagContent = $(this).text(); 
     var htmlTagName = $(this).get(0).tagName ;
     var navbarIndex = $(this).index();
@@ -20,11 +23,10 @@ function showSideStructure(){
     $(this).append("<a name='" + navbarIndex +"'></a>");
       //<a href="url">Link text</a>
       // if ( htmlTagName == "H1" ) { $("#MDh1").append("<li style='text-align: center'>"+ MDTagContent +"</li>");  }
-         if ( htmlTagName == "H2" ) { $("#MDh1").append(                                    "<li><a href='#"+navbarIndex+"'>"+ MDTagContent +"</li>"); } 
-    else if ( htmlTagName == "H3" ) { $("#MDh1").append(                        "<li>&nbsp;&nbsp;<a href='#"+navbarIndex+"'>"+ MDTagContent +"</li>"); } 
-    else if ( htmlTagName == "H4" ) { $("#MDh1").append(            "<li>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#"+navbarIndex+"'>"+ MDTagContent +"</li>"); }
-    else if ( htmlTagName == "H5" ) { $("#MDh1").append("<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#"+navbarIndex+"'>"+ MDTagContent +"</li>"); }
-    else    { $("#MDh1").append(            "<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='#"+navbarIndex+"'>"+ MDTagContent +"</li>"); }
+    // Nível pelo nome da tag (H2 → 2 …); o recuo vem do CSS (.toc-level-N), sem &nbsp;.
+    var level = htmlTagName.charAt(1);
+    var $link = $("<a>").attr("href", "#" + navbarIndex).text(MDTagContent);
+    $("#MDh1").append($("<li>").addClass("toc-level-" + level).append($link));
   });
   $("#lineSide").show();
 }
@@ -38,7 +40,7 @@ function showSideStructure(){
 // 文章滚动 高亮对应的标题
 $("#contentDiv").scroll(   function() { 
   var PositiveDisc = [];
-  $("#pageContent h2,h3,h4,h5,h6 ").each( function(){
+  $(TOC_HEADINGS).each( function(){
       var MDTagContent = $(this).text(); 
       var MDTagIndex = $(this).index(); 
       var titleToTopDisc = $(this).offset().top;
@@ -56,7 +58,8 @@ $("#contentDiv").scroll(   function() {
   // 高亮这个标签. 
   var firstPositive = PositiveDisc[0];
   $(".CSMDh1 li").removeClass('active'); 
-  $("[href='#"+firstPositive+"']").parent().addClass('active'); 
+  $(".CSMDh1 a").removeAttr('aria-current');
+  $(".CSMDh1 [href='#"+firstPositive+"']").attr('aria-current', 'location').parent().addClass('active'); 
 });
 
 
@@ -82,9 +85,16 @@ $(function (){
 // 所以 topbardiv 里面的 上下篇的url链接也是不变的(也就是只能点击一次下一篇.)
 
 
+// Sem destino (primeiro/último post, home): botão marcado aria-disabled e o clique não faz nada.
+function syncTopbarNav(){
+  $("#topbarPre" ).attr("aria-disabled", $("#prePost" ).length ? "false" : "true");
+  $("#topbarNext").attr("aria-disabled", $("#nextPost").length ? "false" : "true");
+}
+
 $(function(){
-  $("#topbarPre" ).click(function(){  $("#prePost" )[0].click();  });
-  $("#topbarNext").click(function(){  $("#nextPost")[0].click();  });
+  syncTopbarNav();
+  $("#topbarPre" ).click(function(){  if ($("#prePost" ).length) { $("#prePost" )[0].click(); }  });
+  $("#topbarNext").click(function(){  if ($("#nextPost").length) { $("#nextPost")[0].click(); }  });
 });
 
 //  $(document).pjax("#prePost", '#contentDiv', { fragment: '#contentDiv', timeout:18000}	);
@@ -97,6 +107,7 @@ $(document).on('pjax:start', function() { NProgress.start(); });
 $(document).on('pjax:end',   function() { 
 	NProgress.done(); 
 	showSideStructure();   
+	syncTopbarNav();
 	});
 
 

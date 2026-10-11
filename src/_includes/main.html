@@ -1,19 +1,21 @@
 <div id="Div">
 <!-- ----------------------------------------------------------------------------------------------- -->
 <div id="cateDiv">
-    <ul id="catenameUL" style="overflow: scroll;" >	
+    <div class="panel-header"><span class="panel-title">Categorias</span></div>
+    <ul id="catenameUL">
         {% for someCate in site.categories %}
             {% assign cateClicked = someCate | first %}    
             {% assign catePosts = someCate | last %}
-                <li id="{{cateClicked}}" class="cateNames"><span>{{ cateClicked }}</span><sup class="cateSup">{{catePosts | size }}</sup></a></li>
+                <li id="{{cateClicked}}" class="cateNames"><span>{{ cateClicked }}</span><sup class="cateSup">{{catePosts | size }}</sup></li>
         {% endfor %}
     </ul>   
 </div>
 
 <!-- ----------------------------------------------------------------------------------------------- -->
 
-<div id="tagDiv"> 
-    <ul class="tagsDiv1-allTags" id="tagnameUL" style="overflow: scroll;" >
+<div id="tagDiv">
+    <div class="panel-header"><span class="panel-title">Tags</span></div>
+    <ul class="tagsDiv1-allTags" id="tagnameUL">
         {% for tag in site.tags %}
             {% assign t = tag | first %}
             {% assign files = tag | last %}
@@ -32,33 +34,24 @@
   </div>
 </div>
 
-	<div id="filenameDiv" >
+	<div id="filenameDiv">
 		<!--  顶部按钮 栏 -->
-		<li id="filenameDivBtnes">
-      <svg class="icon" aria-hidden="true" id="filenameDiSearch" style="font-size:16px;" >
-        <use xlink:href="#icon-sousuo"></use>
-      </svg>  
-		  <a href id="allCateTagPostBtn" style="width:150px; text-align: center"> 
-			  <!-- 这个函数 在 catefilter.js 里面 -->
-        <svg class="icon" aria-hidden="true" style="font-size:16px; padding-left: 0; padding-right: 0;">
-            <use xlink:href="#icon-iconfontcolor52"></use>
-        </svg>
-            <sup style="font-size:0.7em; float:none; position:relative; left: -7px;">{{site.categories | size }}</sup> 
-        <svg class="icon" aria-hidden="true" style="font-size:16px; padding-left: 0; padding-right: 0;" >
-          <use xlink:href="#icon-biaoqian"></use>
-        </svg>
-            <sup style="font-size:0.7em; float:none; position:relative; left: -7px;">{{site.tags | size }}</sup>
-        <svg class="icon" aria-hidden="true" style="font-size:16px; padding-left: 0; padding-right: 0;">
-          <use xlink:href="#icon-wenjianleixing"></use>
-        </svg>
-            <sup style="font-size:0.7em; float:none; position:relative; left: -7px;">{{site.posts | size }}</sup>
-			</a>  
-        <svg class="icon" aria-hidden="true" id="filenameDivDate"; style="font-size:16px;">
+		<div id="filenameDivBtnes" class="panel-header">
+      <svg class="icon" aria-hidden="true" id="filenameDiSearch">
+        <use xlink:href="#i-search"></use>
+      </svg>
+		  <a href id="allCateTagPostBtn" aria-label="Mostrar todas as categorias, tags e posts" title="Mostrar todas as categorias, tags e posts">
+			  <!-- 这个函数 在 9showAll(eye).js 里面 -->
+        <span class="count-pair"><svg class="icon" aria-hidden="true"><use xlink:href="#i-folder"></use></svg><sup>{{site.categories | size }}</sup></span>
+        <span class="count-pair"><svg class="icon" aria-hidden="true"><use xlink:href="#i-tags"></use></svg><sup>{{site.tags | size }}</sup></span>
+        <span class="count-pair"><svg class="icon" aria-hidden="true"><use xlink:href="#i-file-text"></use></svg><sup>{{site.posts | size }}</sup></span>
+			</a>
+        <svg class="icon icon-control" id="filenameDivDate" role="button" aria-label="Mostrar ou ocultar datas">
           <use xlink:href="#icon-eyeblocked"></use>
         </svg>
-        <!-- 这个显隐函数 在main.js 里 -->
-		</li><br>
-		<ul id="filenameUL" style="overflow: scroll;">
+        <!-- 这个显隐函数 在 9showAll(eye).js 里 -->
+		</div>
+		<ul id="filenameUL">
 			{% for post in site.posts reversed %}
       <a href="{{ post.url }}">
 				<li class="postNames" data-cate="{{post.categories}}" data-tag="{{post.tags}}">
@@ -79,49 +72,26 @@
 <!-- ----------------------------------------------------------------------------------------------- -->
 
 <div id="contentDiv" class="markdown-body">
-    <div id="contentDiv-Buttons" style="display: flex; display:none;" >
-        {% if page.previous %}
-            <a href="{{ page.previous.url }}" id="prePost"> <button class="contentButton">
-             <span style="display: inline-block; transform: rotate(180deg);">➤➤</span> {{ page.previous.title }} </button>  
-            </a>
-        {% endif %}	
-        {% if page.next %}
-            <a href="{{ page.next.url }}" id="nextPost">	<button class="contentButton">
-              {{ page.next.title }} ➤➤</button>	
-            </a>
-        {% endif %}	
-    </div>
-
-	<div style="text-align: center;">{{ page.title }}</div>	
-
-
-	{% if page.meta != ‘’ %}
-		meta: {{page.meta}} <hr>
-	{% endif %}
-	<!-- 这里判断一下 有没有设置meta 有就显示 没有就不显示 -->
-
-
-
-
-
-
-<div>
-  <ul id=“list”></ul>
-</div>
-
-
-
-
-
-  
-
-
-
-
-
 	<div id="pageContent">
 	{{ content }}
 	</div>
+
+    {% if page.previous or page.next %}
+    <nav id="contentDiv-Buttons" aria-label="Posts anterior e próximo">
+        {% if page.previous %}
+            <a href="{{ page.previous.url }}" id="prePost" class="contentButton">
+              <span class="contentButton-label">Anterior</span>
+              <span class="contentButton-title">{{ page.previous.title }}</span>
+            </a>
+        {% endif %}
+        {% if page.next %}
+            <a href="{{ page.next.url }}" id="nextPost" class="contentButton contentButton--next">
+              <span class="contentButton-label">Próximo</span>
+              <span class="contentButton-title">{{ page.next.title }}</span>
+            </a>
+        {% endif %}
+    </nav>
+    {% endif %}
 	<!-- 带page前缀 就不会显示文件的标题.  没有page前缀就会显示文件标题 -->
 </div>
 
@@ -132,7 +102,8 @@
     <div id="lineSide-right"> </div>
   </div>
 </div>
-<div id="rightNavbar" >
+<div id="rightNavbar">
+	<div class="panel-header"><span class="panel-title">Nesta página</span></div>
 	<ul id="MDh1" class="CSMDh1">
 		<!--  <p style='text-align: center'> {{page.title}} </p>  文章标题.这里不是pjax区域.会有问题 -->
 	</ul>

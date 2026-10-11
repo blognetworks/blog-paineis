@@ -11,3 +11,4 @@ vendor
 test-results
 playwright-report
 .playwright-mcp
+src/js/fonts

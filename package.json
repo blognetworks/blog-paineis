@@ -6,24 +6,29 @@
     "node": ">=24"
   },
   "scripts": {
-    "build:js": "esbuild entry.js --bundle --format=iife --target=es2020 --outfile=src/js/bundle.js",
-    "build:css": "sass --no-source-map --load-path=. --silence-deprecation=import webpack/sass/main.sass src/css/main.css",
-    "build": "npm run build:js && npm run build:css",
+    "build:js": "esbuild entry.js --bundle --format=iife --target=es2020 --outfile=src/js/bundle.js --loader:.woff2=file --loader:.woff=file --asset-names=fonts/[name]-[hash] --public-path=/js/",
+    "build:css": "sass --no-source-map webpack/styles/main.scss src/css/main.css",
+    "build:icons": "node scripts/build-icons.mjs",
+    "build": "npm run build:icons && npm run build:js && npm run build:css",
     "dev": "concurrently -n js,css \"npm:build:js -- --watch=forever\" \"npm:build:css -- --watch\"",
     "serve": "npm run build && concurrently -n fe,jekyll \"npm:dev\" \"bundle exec jekyll serve --livereload\"",
     "gen:posts": "node scripts/gen-lorem-posts.mjs",
     "test:smoke": "playwright test"
   },
   "dependencies": {
+    "@fontsource/inter": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
     "jquery": "2.2.4",
     "jquery-lazyload": "1.9.7",
     "jquery-pjax": "2.0.1",
     "nprogress": "0.2.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.64.0",
     "concurrently": "10.0.6",
     "esbuild": "0.28.2",
+    "lucide-static": "1.55.0",
     "sass": "1.105.1"
   }
 }

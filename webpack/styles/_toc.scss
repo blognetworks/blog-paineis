@@ -1,0 +1,55 @@
+// Sumário "Nesta página" (auditoria §4 "TOC"): 13px/1,5, recuo de 12px por nível.
+
+#rightNavbar > .panel-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg-toc);
+}
+
+// Espaço inferior para a faixa #arrowNav não cobrir os últimos links.
+#MDh1 {
+  padding-bottom: 56px;
+}
+
+#MDh1 > li > a {
+  display: block;
+  min-height: 32px;
+  padding: 6px 10px;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+}
+
+@for $level from 3 through 6 {
+  #MDh1 > li.toc-level-#{$level} > a {
+    padding-left: 10px + 12px * ($level - 2);
+  }
+}
+
+#MDh1 > li.active {
+  background: var(--bg-active);
+  box-shadow: inset 3px 0 var(--accent);
+
+  > a {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  > a:hover {
+    background: transparent;
+  }
+}
+
+// Sem títulos (home, páginas sem h2–h6), o cabeçalho "Nesta página" some junto com a lista vazia.
+#rightNavbar:not(:has(#MDh1 > li)) > .panel-header {
+  display: none;
+}

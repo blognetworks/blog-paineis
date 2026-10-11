@@ -1,0 +1,154 @@
+// Painéis de categorias, tags e posts (auditoria §4 "Itens", "Contadores <sup>").
+// O filtro lê children('span') de .cateNames/.tagNames: nada entre o li e o span.
+
+#catenameUL,
+#tagnameUL,
+#filenameUL,
+#MDh1 {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Cabeçalho de painel: 40px, fora das ul (o cálculo de altura em 9ES6-scroll.js o mede).
+.panel-header {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding-inline: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+// Itens: normal, hover e ativo.
+.cateNames,
+.tagNames,
+.postNames {
+  min-height: 32px;
+  padding: 6px 8px;
+  color: var(--text-primary);
+  background: transparent;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+}
+
+.cateNames,
+.tagNames {
+  display: flex;
+  align-items: baseline;
+
+  > span {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+.cateNames.active,
+.tagNames.active,
+.postNames.active {
+  color: var(--accent);
+  background: var(--bg-active);
+  font-weight: 600;
+  box-shadow: inset 3px 0 var(--accent);
+}
+
+#filenameUL > a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.postNames {
+  display: block;
+}
+
+// Contadores da interface (não afeta sobrescritos do artigo).
+#cateDiv sup,
+#tagDiv sup,
+#filenameDiv sup {
+  float: none;
+  position: static;
+  vertical-align: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+}
+
+.cateSup,
+.tagSup {
+  flex: 0 0 auto;
+  min-width: 2ch;
+  margin-left: auto;
+  padding-left: 8px;
+  text-align: right;
+}
+
+// Data do post: linha de metadados própria, abaixo do título (alternada por .hidden).
+#filenameDiv sup.fileNameDate {
+  display: block;
+  font-size: 0.8125rem;
+}
+
+// Cabeçalho do painel de posts: busca, "mostrar tudo" com contadores e o olho das datas.
+#filenameDivBtnes {
+  justify-content: space-between;
+  gap: 6px;
+  padding-inline: 4px 2px;
+}
+
+#filenameDiSearch {
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  color: var(--text-tertiary);
+}
+
+#allCateTagPostBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+
+  .count-pair {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  sup {
+    color: inherit;
+  }
+}
