@@ -1,0 +1,12 @@
+# Roadmap: modernização do projeto
+
+Transformar o tema CMS de três colunas (herdado de Xu-Jian.github.io) em base própria de blog/conhecimento, com stack atual e design novo, sem perder features.
+
+| Ordem | Spec | Depende de | Resumo |
+|---|---|---|---|
+| 1 | [001-stack-upgrade](001-stack-upgrade/spec.md) | — | Jekyll 4.4 + Ruby atual, esbuild + Dart Sass, deps fora de CDN morto, conteúdo lorem ipsum, smoke test |
+| 2 | 002-js-sem-jquery | 001 | Reescrita dos módulos JS em JS moderno sem jQuery/plugins, testes Playwright por feature |
+| 3 | 003-redesign | 002 | Tokens de design, tipografia, dark mode, layout de três colunas repensado |
+| 4 | 004-deploy (opcional) | 001 | Publicação (destino a definir) |
+
+Cada spec segue o próprio ciclo spec → plano → implementação → revisão.
