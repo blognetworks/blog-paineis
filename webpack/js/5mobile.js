@@ -2,7 +2,7 @@
 // 手机端 过滤栏 宽度设置:  cate + tag 固定宽度. filename 剩下宽度.
 $(function (){
   // 先判断屏幕宽度 如果<= 414 那就假设设备是手机 那么!!!  文件栏目的宽度 就是 手机宽度 - cata宽度 - tag宽度 - 三个padding宽度.
-  if ( $(window).width() <= "414") {
+  if ( $(window).width() <= "1024") {
       var screenWidth   = parseFloat($(window).width() );                           
       var CateWidth     = parseFloat($("#cateDiv").css("flex-basis"));
       var TagWidth      = parseFloat($("#tagDiv").css("flex-basis"));

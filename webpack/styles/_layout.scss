@@ -1,0 +1,192 @@
+// Estrutura das cinco regiões (auditoria §4 "Estrutura e superfícies", "Divisores arrastáveis",
+// "Anterior/próximo e controles inferiores").
+// Larguras são INICIAIS (sem !important): o flex-basis inline escrito pelo 9dragbar.js prevalece.
+// Padding externo dos painéis fica 0, porque a matemática do arraste desconta padding.
+
+// Precisa ser 100%, não 100vh (Safari ao dar zoom).
+#bigDiv {
+  height: 100%;
+}
+
+// Layout vertical: absolute com top/bottom/left/right simultâneos, abaixo da barra superior.
+#Div {
+  display: flex;
+  position: absolute;
+  top: var(--topbar-height);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-app);
+}
+
+#cateDiv,
+#tagDiv,
+#filenameDiv,
+#rightNavbar {
+  position: relative;
+  padding: 0;
+  min-height: 0;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+#cateDiv {
+  flex-basis: 128px;
+  max-width: 300px;
+  background: var(--bg-categories);
+  // Categorias e tags não têm divisor arrastável entre si: fio de borda sem ocupar largura.
+  box-shadow: inset -1px 0 var(--border);
+}
+
+#tagDiv {
+  flex-basis: 128px;
+  max-width: 300px;
+  background: var(--bg-tags);
+}
+
+#filenameDiv {
+  flex-basis: 256px;
+  max-width: 1450px;
+  background: var(--bg-posts);
+}
+
+#rightNavbar {
+  flex-basis: 192px;
+  height: 100%;
+  overflow-x: hidden;
+  background: var(--bg-toc);
+}
+
+#contentDiv {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  padding: 32px;
+  background: var(--bg-content);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#pageContent {
+  max-width: 72ch;
+  margin-inline: auto;
+  overflow: visible;
+  overflow-wrap: anywhere;
+}
+
+// Listas roláveis com trilho transparente e thumb --divider (barras visíveis, finas).
+#catenameUL,
+#tagnameUL,
+#filenameUL,
+#rightNavbar,
+#contentDiv {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--divider) transparent;
+}
+
+#catenameUL,
+#tagnameUL,
+#filenameUL {
+  overflow-x: hidden;
+}
+
+// Divisores arrastáveis: 10px de área, fio de 1px no centro; IDs e metades preservados.
+#lineLeft,
+#lineRight,
+#lineSide {
+  width: 10px;
+  height: 100%;
+  flex: 0 0 10px;
+  cursor: col-resize;
+  background: transparent;
+}
+
+.lineFlex {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.lineInDiv {
+  flex: 0 0 1px;
+  height: 100%;
+  background: var(--divider);
+}
+
+#lineLeft-left,
+#lineLeft-right,
+#lineRight-left,
+#lineRight-right,
+#lineSide-left,
+#lineSide-right {
+  flex: 1 1 0;
+  height: 100%;
+  background: transparent;
+}
+
+#lineLeft:hover .lineInDiv,
+#lineRight:hover .lineInDiv,
+#lineSide:hover .lineInDiv,
+#lineLeft:focus-visible .lineInDiv,
+#lineRight:focus-visible .lineInDiv,
+#lineSide:focus-visible .lineInDiv {
+  background: var(--accent);
+}
+
+// Anterior/próximo ao final do artigo: um único link por destino.
+#contentDiv-Buttons {
+  display: flex;
+  gap: 12px;
+  max-width: 72ch;
+  margin: 48px auto 0;
+}
+
+.contentButton {
+  // Cada destino ocupa metade da faixa, mesmo quando só existe um.
+  flex: 0 1 calc(50% - 6px);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  background: var(--bg-posts);
+  border: 1px solid var(--border-control);
+  border-radius: 6px;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+}
+
+.contentButton--next {
+  text-align: right;
+  // Sem anterior (primeiro post), o próximo continua alinhado à direita.
+  margin-left: auto;
+}
+
+.contentButton-label {
+  font: 400 0.75rem/1.5 var(--font-mono);
+  color: var(--text-tertiary);
+}
+
+.contentButton-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+// Faixa inferior direita: recolher painéis, voltar ao topo, restaurar painéis.
+#arrowNav {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: var(--bg-toc);
+}

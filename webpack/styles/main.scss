@@ -1,8 +1,12 @@
 // Entrada de estilos da 003-redesign (substitui webpack/sass/main.sass).
 @use "tokens";
 @use "base";
-// Temporário: estrutura de layout dos .sass antigos, sem cores. A Task 3 substitui.
-@use "legacy";
+@use "layout";
+@use "topbar";
+@use "panels";
+@use "toc";
+// Placeholder até a Task 5 (breakpoint único de 1024px).
+@use "mobile";
 
 :root {
   @include tokens.shared;

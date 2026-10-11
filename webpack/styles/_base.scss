@@ -57,15 +57,52 @@ body {
   border-left-color: var(--accent);
 }
 
-// Botão de ícone genérico (usado por #themeToggle).
+// Ícones do sprite (Lucide, traço em currentColor): 18px.
+.icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  overflow: hidden;
+}
+
+// Controle de ícone: alvo de 32×32px, ícone de 18px (auditoria §4 "Barra superior").
+.icon-button,
+.icon-control {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+}
+
 .icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: 0;
-  background: transparent;
-  color: inherit;
   font: inherit;
-  cursor: pointer;
+  text-decoration: none;
+
+  &[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: default;
+
+    &:hover {
+      color: var(--text-secondary);
+      background: transparent;
+    }
+  }
+}
+
+// O próprio <svg> é o controle (o JS troca o <use> dentro dele): padding centraliza 18px em 32px.
+.icon-control {
+  padding: 7px;
 }

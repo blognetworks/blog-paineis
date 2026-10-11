@@ -3,7 +3,7 @@
 $(function button(){
   // 判断 所有的都不在.就显示. 不然就隐藏;   隐藏(none) → 就显示左边 3个+两拖动条;  显示(block):→隐藏左边三个+两拖动条 
     $("#topbarToggle").click(   function(){ 
-        if ( $(window).width() <= 414 ) {  
+        if ( $(window).width() <= 1024 ) {  
               if (     $("#filenameDiv").css("display") == "none" 
                         && $("#tagDiv").css("display") == "none" 
                         && $("#cateDiv").css("display") == "none" ) {

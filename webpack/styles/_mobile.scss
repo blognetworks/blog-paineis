@@ -1,0 +1,33 @@
+// Placeholder do mobile (a Task 5 implementa a auditoria §4 "Mobile").
+// Por ora, mantém a estrutura legada (0-Mobile.sass) no breakpoint único de 1024px:
+// abaixo dele, só o conteúdo; os botões da barra reabrem os painéis via 9btn.js.
+@media screen and (max-width: 1023.98px) {
+  #cateDiv,
+  #tagDiv,
+  #filenameDiv,
+  #rightNavbar,
+  #arrowNav,
+  #donate,
+  #githubReadme,
+  #githubHome,
+  #GithubStar {
+    display: none;
+  }
+
+  // Larguras legadas quando os painéis são reabertos (5mobile.js parte delas).
+  #cateDiv,
+  #tagDiv {
+    flex-basis: 88px;
+  }
+
+  .cateSup,
+  .tagSup {
+    display: none;
+  }
+
+  #lineLeft,
+  #lineRight,
+  #lineSide {
+    display: none !important;
+  }
+}

@@ -89,3 +89,40 @@ test.describe('tema', () => {
     expect(await stored(page)).toBe('system');
   });
 });
+
+// Regiões (Task 3): o arraste dos divisores continua mudando o flex-basis e o fim das listas é alcançável.
+test.describe('regiões', () => {
+  test('arrastar #lineLeft muda o flex-basis de #tagDiv', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const basis = () => page.locator('#tagDiv').evaluate((el) => getComputedStyle(el).flexBasis);
+    expect(await basis()).toBe('128px');
+
+    const box = await page.locator('#lineLeft').boundingBox();
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x + 40, y, { steps: 8 });
+    await page.mouse.up();
+
+    const after = parseFloat(await basis());
+    expect(after).toBeGreaterThan(160);
+    expect(after).toBeLessThan(176);
+  });
+
+  test('o último item de cada lista lateral é alcançável por rolagem', async ({ page }) => {
+    await page.goto('/');
+    for (const list of ['#catenameUL', '#tagnameUL', '#filenameUL']) {
+      const result = await page.locator(list).evaluate((ul) => {
+        ul.scrollTop = ul.scrollHeight;
+        const items = ul.querySelectorAll('li');
+        const last = items[items.length - 1].getBoundingClientRect();
+        const box = ul.getBoundingClientRect();
+        return { lastBottom: last.bottom, listBottom: box.bottom, viewport: window.innerHeight };
+      });
+      expect(result.listBottom, list).toBeLessThanOrEqual(result.viewport + 0.5);
+      expect(result.lastBottom, list).toBeLessThanOrEqual(result.listBottom + 0.5);
+    }
+  });
+});

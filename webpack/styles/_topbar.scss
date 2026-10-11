@@ -1,0 +1,76 @@
+// Barra superior (auditoria §4 "Barra superior"): 48px, ícones de 18px em controles de 32px.
+
+#topbarDiv {
+  height: var(--topbar-height);
+  padding-inline: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-topbar);
+  border-bottom: 1px solid var(--border);
+}
+
+#topbarLeft,
+#topbarRight {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#topbarRight {
+  justify-content: flex-end;
+}
+
+.navbox {
+  flex: 0 0 auto;
+
+  > ul {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  > ul > li {
+    position: relative;
+  }
+}
+
+// Menus aninhados (hoje comentados no HTML) abrem por hover e por foco.
+.subnav,
+.threenav {
+  display: none;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-control);
+  border-radius: 6px;
+}
+
+.subnav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 3;
+}
+
+.threenav {
+  position: absolute;
+  top: 0;
+  left: 100%;
+}
+
+.subnav > li {
+  position: relative;
+}
+
+.navbox li:hover > .subnav,
+.navbox li:focus-within > .subnav,
+.subnav li:hover > .threenav,
+.subnav li:focus-within > .threenav {
+  display: block;
+}
