@@ -8,7 +8,8 @@
   "scripts": {
     "build:js": "esbuild entry.js --bundle --format=iife --target=es2020 --outfile=src/js/bundle.js",
     "build:css": "sass --no-source-map --load-path=. --silence-deprecation=import webpack/sass/main.sass src/css/main.css",
-    "build": "npm run build:js && npm run build:css",
+    "build:icons": "node scripts/build-icons.mjs",
+    "build": "npm run build:icons && npm run build:js && npm run build:css",
     "dev": "concurrently -n js,css \"npm:build:js -- --watch=forever\" \"npm:build:css -- --watch\"",
     "serve": "npm run build && concurrently -n fe,jekyll \"npm:dev\" \"bundle exec jekyll serve --livereload\"",
     "gen:posts": "node scripts/gen-lorem-posts.mjs",
@@ -24,6 +25,7 @@
     "@playwright/test": "1.64.0",
     "concurrently": "10.0.6",
     "esbuild": "0.28.2",
+    "lucide-static": "1.55.0",
     "sass": "1.105.1"
   }
 }

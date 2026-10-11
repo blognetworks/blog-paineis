@@ -1,15 +1,15 @@
 <div id="topbarDiv"> 
   <div style="display: inline" id="topbarLeft">
     <!-- 显隐分类栏 -->
-    <span title="显隐分类栏" style=" padding-left: 7px;">
+    <span title="显隐分类栏" aria-label="Mostrar ou ocultar categorias" role="button" style=" padding-left: 7px;">
       <svg class="icon" aria-hidden="true" id="topbarToggle"  >
-        <use xlink:href="#icon-layouts"></use>
+        <use xlink:href="#i-panel-left"></use>
       </svg>
     </span>
     
-    <a href="{{site.githubReadmeURL}}"  target="_blank" title="Github Readme" id="githubHome" >
+    <a href="{{site.githubReadmeURL}}"  target="_blank" title="Github Readme" id="githubHome" aria-label="Repositório no GitHub" >
       <svg class="icon" aria-hidden="true"  >
-        <use xlink:href="#icon-Git"></use>
+        <use xlink:href="#i-folder-git-2"></use>
       </svg> 
     </a>
   </div>
@@ -18,14 +18,14 @@
 
   <a href="{{site.codePen_url}}" target="_blank" title="Doc 简历下载" >
     <svg class="icon" aria-hidden="true"  >
-      <use xlink:href="#icon-jianli"></use>
+      <use xlink:href="#i-file-user"></use>
     </svg>     
   </a>
 
 
   <a href="{{site.codePen_url}}" target="_blank" title="在线简历" >  
     <svg class="icon" aria-hidden="true"  >
-      <use xlink:href="#icon-jianli"></use>
+      <use xlink:href="#i-file-user"></use>
     </svg>
   </a>
 
@@ -36,9 +36,9 @@
     <ul class="clearfix">
       <!-- 上一篇图标 -->
       <li style="padding-right: 15px;">
-        <a title="上一篇: (快捷键 左方向键)" id="topbarPre" >
+        <a title="上一篇: (快捷键 左方向键)" id="topbarPre" aria-label="Post anterior" >
         <svg class="icon" aria-hidden="true"  >
-          <use xlink:href="#icon-jiantou121"></use>
+          <use xlink:href="#i-chevron-left"></use>
         </svg>  
       </a>
       </li>
@@ -47,7 +47,7 @@
         <a href="#">
           <span onclick="alert('{{site.name}}: {{site.Phone}}')" title="{{site.name}}: {{site.Phone}}" > 
             <svg class="icon" aria-hidden="true"  >
-              <use xlink:href="#icon-shouji"></use>
+              <use xlink:href="#i-smartphone"></use>
             </svg>
           </span>
         </a>
@@ -72,7 +72,7 @@
       <li id="mail">
         <a href="mailto:{{site.email}}" target="_blank" title="E-mail Me" >    
           <svg class="icon" aria-hidden="true"  >
-            <use xlink:href="#icon-emailround"></use>
+            <use xlink:href="#i-mail"></use>
           </svg>
         </a>
       </li>
@@ -81,7 +81,7 @@
       <li style="padding-left: 15px;">
         <a title="下一篇: (快捷键 右方向键)" id="topbarNext">
           <svg class="icon" aria-hidden="true"  >
-            <use xlink:href="#icon-jiantou122"></use>
+            <use xlink:href="#i-chevron-right"></use>
           </svg>  
         </a>
       </li>
@@ -93,13 +93,13 @@
      Codepen 图标
   <a href="{{site.codePen_url}}" target="_blank" title="Codepen Home" >
     <svg class="icon" aria-hidden="true"  >
-      <use xlink:href="#icon-codepen"></use>
+      <use xlink:href="#i-code-xml"></use>
     </svg>
   </a>
 
     <a href="{{site.githubReadmeURL}}"  target="_blank" id="githubReadme">
       <svg class="icon" aria-hidden="true"  >
-        <use xlink:href="#icon-Git"></use>
+        <use xlink:href="#i-folder-git-2"></use>
       </svg>
     </a>
 
@@ -110,12 +110,12 @@
  <div style="display: inline; " id="topbarRight" >
     <!-- 显隐文件结构栏-->  
     <svg class="icon" aria-hidden="true" id="topbarStructureToggle" style="float: right; padding-left: 7px; padding-right: 7px;">
-      <use xlink:href="#icon-layouts"></use>
+      <use xlink:href="#i-panel-right"></use>
     </svg>
         <!-- 捐赠图标 -->
-    <a style="line-height: 30px; float: right" id="donate">
+    <a style="line-height: 30px; float: right" id="donate" aria-label="Apoiar">
       <span style="display: table-cell; vertical-align: middle; font-size: 23px; transform: translate(0,8%);" 
-        title="Donate: {{site.Phone}}"; onclick="alert('Donate: {{site.Phone}}')">💝
+        title="Donate: {{site.Phone}}"; onclick="alert('Donate: {{site.Phone}}')"><svg class="icon" aria-hidden="true"><use xlink:href="#i-heart-handshake"></use></svg>
       </span>
     </a>
   </div>

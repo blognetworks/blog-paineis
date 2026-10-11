@@ -35,25 +35,25 @@
 	<div id="filenameDiv" >
 		<!--  顶部按钮 栏 -->
 		<li id="filenameDivBtnes">
-      <svg class="icon" aria-hidden="true" id="filenameDiSearch" style="font-size:16px;" >
-        <use xlink:href="#icon-sousuo"></use>
+      <svg class="icon" aria-hidden="true" id="filenameDiSearch" role="img" aria-label="Buscar" style="font-size:16px;" >
+        <use xlink:href="#i-search"></use>
       </svg>  
 		  <a href id="allCateTagPostBtn" style="width:150px; text-align: center"> 
 			  <!-- 这个函数 在 catefilter.js 里面 -->
         <svg class="icon" aria-hidden="true" style="font-size:16px; padding-left: 0; padding-right: 0;">
-            <use xlink:href="#icon-iconfontcolor52"></use>
+            <use xlink:href="#i-folder"></use>
         </svg>
             <sup style="font-size:0.7em; float:none; position:relative; left: -7px;">{{site.categories | size }}</sup> 
         <svg class="icon" aria-hidden="true" style="font-size:16px; padding-left: 0; padding-right: 0;" >
-          <use xlink:href="#icon-biaoqian"></use>
+          <use xlink:href="#i-tags"></use>
         </svg>
             <sup style="font-size:0.7em; float:none; position:relative; left: -7px;">{{site.tags | size }}</sup>
         <svg class="icon" aria-hidden="true" style="font-size:16px; padding-left: 0; padding-right: 0;">
-          <use xlink:href="#icon-wenjianleixing"></use>
+          <use xlink:href="#i-file-text"></use>
         </svg>
             <sup style="font-size:0.7em; float:none; position:relative; left: -7px;">{{site.posts | size }}</sup>
 			</a>  
-        <svg class="icon" aria-hidden="true" id="filenameDivDate"; style="font-size:16px;">
+        <svg class="icon" aria-hidden="true" id="filenameDivDate"; role="button" aria-label="Mostrar ou ocultar datas" style="font-size:16px;">
           <use xlink:href="#icon-eyeblocked"></use>
         </svg>
         <!-- 这个显隐函数 在main.js 里 -->
@@ -81,13 +81,13 @@
 <div id="contentDiv" class="markdown-body">
     <div id="contentDiv-Buttons" style="display: flex; display:none;" >
         {% if page.previous %}
-            <a href="{{ page.previous.url }}" id="prePost"> <button class="contentButton">
-             <span style="display: inline-block; transform: rotate(180deg);">➤➤</span> {{ page.previous.title }} </button>  
+            <a href="{{ page.previous.url }}" id="prePost" aria-label="Post anterior: {{ page.previous.title }}"> <button class="contentButton">
+             <svg class="icon" aria-hidden="true" style="font-size:1em; padding:0; vertical-align:-0.125em;"><use xlink:href="#i-chevron-left"></use></svg> {{ page.previous.title }} </button>  
             </a>
         {% endif %}	
         {% if page.next %}
-            <a href="{{ page.next.url }}" id="nextPost">	<button class="contentButton">
-              {{ page.next.title }} ➤➤</button>	
+            <a href="{{ page.next.url }}" id="nextPost" aria-label="Próximo post: {{ page.next.title }}">	<button class="contentButton">
+              {{ page.next.title }} <svg class="icon" aria-hidden="true" style="font-size:1em; padding:0; vertical-align:-0.125em;"><use xlink:href="#i-chevron-right"></use></svg></button>	
             </a>
         {% endif %}	
     </div>

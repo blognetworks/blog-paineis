@@ -1,6 +1,7 @@
 {% include header.html %}      <!-- 所有文章头部 -->
 
 <div id="bigDiv">          
+	{% include icons.svg %}
 	{% include topbar.html %}
 	{% include main.html %}
 </div>
@@ -8,9 +9,9 @@
 
 <!-- 绝对定位 导航条  右下角: 三个箭头而已. -->
 <div id="arrowNav">
-	<span style="font-size: 25px; display: inline-block; transform: rotate(180deg);" id="leftBtn">➟</span>
-	<span style="font-size: 25px; display: inline-block; transform: rotate(270deg);" id="toTopBtn">➼</span>
-	<span style="font-size: 25px" id="rightBtn">➟</span>
+	<span style="font-size: 25px; display: inline-block;" id="leftBtn" role="button" aria-label="Recolher painéis"><svg class="icon" aria-hidden="true"><use xlink:href="#i-panel-left-close"></use></svg></span>
+	<span style="font-size: 25px; display: inline-block;" id="toTopBtn" role="button" aria-label="Voltar ao topo"><svg class="icon" aria-hidden="true"><use xlink:href="#i-arrow-up-to-line"></use></svg></span>
+	<span style="font-size: 25px" id="rightBtn" role="button" aria-label="Restaurar painéis"><svg class="icon" aria-hidden="true"><use xlink:href="#i-panel-left-open"></use></svg></span>
 </div>
 
 {% include footer.html %}   <!-- 所有文章尾部 -->

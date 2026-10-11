@@ -5,7 +5,6 @@ import 'jquery-lazyload';
 import 'nprogress/nprogress.css';
 
 import './webpack/js/0filter&highlight.js';
-import './webpack/js/4iconfont.js';
 import './webpack/js/5mobile.js';
 import './webpack/js/7structurebar(pjax).js';
 import './webpack/js/9btn.js';
