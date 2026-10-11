@@ -1,5 +1,13 @@
 _site
 .sass-cache
 .jekyll-metadata
-src/assets/bundle.js
+src/js/bundle.js
+src/js/bundle.css
+src/css/main.css
 node_modules
+.bundle
+vendor
+.jekyll-cache
+test-results
+playwright-report
+.playwright-mcp
