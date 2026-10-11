@@ -1,13 +1,13 @@
 <div id="topbarDiv"> 
   <div style="display: inline" id="topbarLeft">
     <!-- 显隐分类栏 -->
-    <span title="显隐分类栏" aria-label="Mostrar ou ocultar categorias" role="button" style=" padding-left: 7px;">
+    <span title="Mostrar ou ocultar categorias" aria-label="Mostrar ou ocultar categorias" role="button" style=" padding-left: 7px;">
       <svg class="icon" aria-hidden="true" id="topbarToggle"  >
         <use xlink:href="#i-panel-left"></use>
       </svg>
     </span>
     
-    <a href="{{site.githubReadmeURL}}"  target="_blank" title="Github Readme" id="githubHome" aria-label="Repositório no GitHub" >
+    <a href="{{site.githubReadmeURL}}"  target="_blank" title="Repositório no GitHub" id="githubHome" aria-label="Repositório no GitHub" >
       <svg class="icon" aria-hidden="true"  >
         <use xlink:href="#i-folder-git-2"></use>
       </svg> 
@@ -36,7 +36,7 @@
     <ul class="clearfix">
       <!-- 上一篇图标 -->
       <li style="padding-right: 15px;">
-        <a title="上一篇: (快捷键 左方向键)" id="topbarPre" aria-label="Post anterior" >
+        <a title="Post anterior (seta esquerda)" id="topbarPre" aria-label="Post anterior" >
         <svg class="icon" aria-hidden="true"  >
           <use xlink:href="#i-chevron-left"></use>
         </svg>  
@@ -45,7 +45,7 @@
       <!-- 手机图标 -->
       <li id="mobile">
         <a href="#">
-          <span onclick="alert('{{site.name}}: {{site.Phone}}')" title="{{site.name}}: {{site.Phone}}" > 
+          <span onclick="alert('{{site.name}}: {{site.Phone}}')" title="Telefone" role="button" aria-label="Telefone" > 
             <svg class="icon" aria-hidden="true"  >
               <use xlink:href="#i-smartphone"></use>
             </svg>
@@ -70,7 +70,7 @@
 
       <!-- 邮件图标 -->
       <li id="mail">
-        <a href="mailto:{{site.email}}" target="_blank" title="E-mail Me" >    
+        <a href="mailto:{{site.email}}" target="_blank" title="Enviar e-mail" aria-label="Enviar e-mail" >    
           <svg class="icon" aria-hidden="true"  >
             <use xlink:href="#i-mail"></use>
           </svg>
@@ -79,7 +79,7 @@
 
       <!-- 下一篇图标 -->
       <li style="padding-left: 15px;">
-        <a title="下一篇: (快捷键 右方向键)" id="topbarNext">
+        <a title="Próximo post (seta direita)" id="topbarNext" aria-label="Próximo post">
           <svg class="icon" aria-hidden="true"  >
             <use xlink:href="#i-chevron-right"></use>
           </svg>  
@@ -109,13 +109,13 @@
 
  <div style="display: inline; " id="topbarRight" >
     <!-- 显隐文件结构栏-->  
-    <svg class="icon" aria-hidden="true" id="topbarStructureToggle" style="float: right; padding-left: 7px; padding-right: 7px;">
+    <svg class="icon" id="topbarStructureToggle" role="button" aria-label="Mostrar ou ocultar sumário" style="float: right; padding-left: 7px; padding-right: 7px;">
       <use xlink:href="#i-panel-right"></use>
     </svg>
         <!-- 捐赠图标 -->
     <a style="line-height: 30px; float: right" id="donate" aria-label="Apoiar">
       <span style="display: table-cell; vertical-align: middle; font-size: 23px; transform: translate(0,8%);" 
-        title="Donate: {{site.Phone}}"; onclick="alert('Donate: {{site.Phone}}')"><svg class="icon" aria-hidden="true"><use xlink:href="#i-heart-handshake"></use></svg>
+        title="Apoiar"; onclick="alert('Donate: {{site.Phone}}')"><svg class="icon" aria-hidden="true"><use xlink:href="#i-heart-handshake"></use></svg>
       </span>
     </a>
   </div>
