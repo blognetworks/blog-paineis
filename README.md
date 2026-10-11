@@ -15,6 +15,8 @@ npm ci
 npm run serve        # front-end em watch + jekyll serve em http://localhost:4000
 ```
 
+O Jekyll não compila JS/CSS: rode `npm run build` (ou `npm run serve`) antes de `bundle exec jekyll build` ou `serve`.
+
 ## Comandos
 
 | Comando | O que faz |
@@ -32,3 +34,7 @@ Posts em `src/_posts/` com uma categoria e uma tag cada. Nomes de categoria e ta
 ## Specs
 
 Ver [`docs/specs/ROADMAP.md`](docs/specs/ROADMAP.md).
+
+## Licença
+
+MIT. Baseado no tema CMS original de Xu-Jian (MIT).

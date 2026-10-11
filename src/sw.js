@@ -15,6 +15,7 @@ const ignoreFetch = [
     'js/main.js',
     'css/main.css',
     'js/bundle.js',
+    'js/bundle.css',
 ];
 
 
