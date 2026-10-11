@@ -1,5 +1,5 @@
 // Painéis de categorias, tags e posts (auditoria §4 "Itens", "Contadores <sup>").
-// O filtro lê children('span') de .cateNames/.tagNames: nada entre o li e o span.
+// O filtro (filter.js) lê o span filho direto de .cateNames/.tagNames: nada entre o li e o span.
 
 #catenameUL,
 #tagnameUL,
@@ -10,8 +10,9 @@
   list-style: none;
 }
 
-// Cabeçalho de painel: 40px, fora das ul (o cálculo de altura em 9ES6-scroll.js o mede).
+// Cabeçalho de painel: 40px, fora das ul; não encolhe na coluna flex do painel.
 .panel-header {
+  flex: 0 0 auto;
   height: 40px;
   display: flex;
   align-items: center;
@@ -20,6 +21,8 @@
 }
 
 .panel-title {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -69,14 +72,23 @@
   box-shadow: inset 3px 0 var(--accent);
 }
 
-#filenameUL > a {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-}
-
+// Post: li.postNames > a (R5.2). O link ocupa a linha inteira e recebe o espaçamento do item,
+// para que toda a área clicável navegue.
 .postNames {
   display: block;
+  padding: 0;
+
+  > a {
+    display: block;
+    min-height: 32px;
+    padding: 6px 8px;
+    color: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+  }
 }
 
 // Contadores da interface (não afeta sobrescritos do artigo).
@@ -114,6 +126,7 @@
   justify-content: space-between;
   gap: 6px;
   padding-inline: 4px 2px;
+  overflow: hidden;
 }
 
 #filenameDiSearch {
@@ -125,11 +138,17 @@
 
 #allCateTagPostBtn {
   display: flex;
+  min-width: 0;
+  overflow: hidden;
   align-items: center;
   gap: 6px;
   padding: 4px 6px;
+  border: 0;
   border-radius: 6px;
   color: var(--text-secondary);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
   text-decoration: none;
 
   &:hover {
@@ -150,5 +169,57 @@
 
   sup {
     color: inherit;
+  }
+}
+
+// Botões ± de largura (R5.4, WCAG 2.5.7): alternativa de um só ponteiro ao arraste do divisor.
+// Discretos: aparecem com o cabeçalho em hover ou com foco dentro dele; alvo de 24×24 (2.5.8).
+.resize-buttons {
+  flex: none;
+  display: inline-flex;
+  gap: 2px;
+  opacity: 0;
+}
+
+.panel-header:hover .resize-buttons,
+.panel-header:focus-within .resize-buttons {
+  opacity: 1;
+}
+
+// Sem hover (tela de toque), ficam sempre visíveis.
+@media (hover: none) {
+  .resize-buttons {
+    opacity: 1;
+  }
+}
+
+.resize-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  color: var(--text-tertiary);
+  background: transparent;
+  cursor: pointer;
+
+  .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+
+  // No limite (mínimo ou máximo) o clique não muda nada.
+  &[aria-disabled="true"] {
+    color: var(--text-tertiary);
+    background: transparent;
+    cursor: default;
   }
 }

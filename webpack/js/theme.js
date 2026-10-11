@@ -1,7 +1,7 @@
 // Tema: ciclo Sistema → Claro → Escuro no botão #themeToggle.
 // "Sistema" = sem atributo data-theme (o CSS segue prefers-color-scheme).
 // A pré-pintura (script inline em header.html) aplica o tema salvo antes do CSS.
-// O botão fica fora de #contentDiv, então o PJAX não o substitui.
+// O botão fica fora de #contentDiv, então a navegação parcial não o substitui.
 
 const KEY = 'blog.theme';
 const ORDER = ['system', 'light', 'dark'];

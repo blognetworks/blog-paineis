@@ -11,7 +11,7 @@ Introdução sobre Node. Lorem ipsum dolor sit amet, consectetur adipiscing elit
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-<img class="lazy" data-original="/assets/img/placeholder.svg" src="/assets/img/placeholder.svg" width="640" height="360" alt="Imagem de exemplo">
+<img class="lazy" loading="lazy" src="/assets/img/placeholder.svg" width="640" height="360" alt="Imagem de exemplo">
 
 ### Exemplo em JavaScript
 

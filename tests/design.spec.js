@@ -67,7 +67,7 @@ test.describe('tema', () => {
     expect(await bgApp(page)).toBe('#0f1218');
   });
 
-  test('tema escuro sobrevive à navegação PJAX e o botão continua funcional', async ({ page }) => {
+  test('tema escuro sobrevive à navegação parcial e o botão continua funcional', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
     await page.goto('/');
     await page.evaluate(() => { window.__semRecarga = true; });
@@ -78,7 +78,7 @@ test.describe('tema', () => {
 
     const first = page.locator('#filenameUL a').first();
     const href = await first.getAttribute('href');
-    await first.locator('li.postNames').click();
+    await page.locator('#filenameUL li.postNames').first().click(); // li.postNames > a (002, R5.2)
     await expect(page).toHaveURL(new RegExp(href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
     await expect(page.locator('#pageContent h2').first()).toBeVisible();
     expect(await page.evaluate(() => window.__semRecarga)).toBe(true);
@@ -187,7 +187,6 @@ test.describe('mobile 390×844', () => {
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
     // O fim de cada lista do navegador é alcançável dentro da tela.
-    await page.waitForTimeout(200); // animação .show(100)
     for (const list of ['#filenameUL', '#catenameUL', '#tagnameUL']) {
       const r = await page.locator(list).evaluate((ul) => {
         ul.scrollTop = ul.scrollHeight;

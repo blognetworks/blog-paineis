@@ -22,14 +22,16 @@ test('home carrega com 4 categorias, 12 tags, 24 posts e sem erros', async ({ pa
   expect(errors).toEqual([]);
 });
 
-test('plugins jQuery estão carregados', async ({ page }) => {
+test('sem jQuery: window.jQuery e window.$ indefinidos, NProgress disponível', async ({ page }) => {
   await page.goto('/');
-  const ok = await page.evaluate(() => ({
-    pjax: typeof window.$?.fn?.pjax,
-    lazyload: typeof window.$?.fn?.lazyload,
-    nprogress: typeof window.NProgress?.start,
+  const globals = await page.evaluate(() => ({
+    jQuery: typeof window.jQuery,
+    dollar: typeof window.$,
   }));
-  expect(ok).toEqual({ pjax: 'function', lazyload: 'function', nprogress: 'function' });
+  expect(globals).toEqual({ jQuery: 'undefined', dollar: 'undefined' });
+  // O NProgress vem empacotado no bundle (não é global): disponível = a barra aparece no nav:start.
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('nav:start', { detail: { url: location.href } })));
+  await expect(page.locator('#nprogress')).toBeAttached();
 });
 
 test('clicar numa categoria filtra tags e posts', async ({ page }) => {
@@ -48,13 +50,13 @@ test('clicar numa tag filtra posts e destaca a categoria', async ({ page }) => {
   await expect(page.locator('li.postNames:visible')).toHaveCount(2);
 });
 
-test('clicar num post navega via PJAX, sem recarga, e destaca tag e categoria', async ({ page }) => {
+test('clicar num post navega via navegação parcial, sem recarga, e destaca tag e categoria', async ({ page }) => {
   const errors = trackErrors(page);
   await page.goto('/');
   await page.evaluate(() => { window.__semRecarga = true; });
   const first = page.locator('#filenameUL a').first();
   const href = await first.getAttribute('href');
-  await first.locator('li.postNames').click();
+  await page.locator('#filenameUL li.postNames').first().click(); // li.postNames > a (002, R5.2)
   await expect(page).toHaveURL(new RegExp(href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
   await expect(page.locator('#pageContent h2').first()).toBeVisible();
   expect(await page.evaluate(() => window.__semRecarga)).toBe(true);
