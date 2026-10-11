@@ -60,6 +60,10 @@
   --code-mark-bg: #DBEAFE;
   --code-insert-bg: #DBEAFE;
   --code-delete-bg: #E8EDF3;
+
+  // Imagens do artigo: sem tratamento no claro.
+  --img-filter: none;
+  --img-outline: none;
 }
 
 @mixin dark {
@@ -121,6 +125,10 @@
   --code-mark-bg: #203758;
   --code-insert-bg: #203758;
   --code-delete-bg: #252F3D;
+
+  // Imagens do artigo: um pouco menos de brilho para não ofuscar no escuro.
+  --img-filter: brightness(0.9);
+  --img-outline: 1px solid var(--border);
 }
 
 @mixin shared {

@@ -48,3 +48,8 @@
     background: transparent;
   }
 }
+
+// Sem títulos (home, páginas sem h2–h6), o cabeçalho "Nesta página" some junto com a lista vazia.
+#rightNavbar:not(:has(#MDh1 > li)) > .panel-header {
+  display: none;
+}

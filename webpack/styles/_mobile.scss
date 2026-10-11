@@ -1,7 +1,31 @@
-// Placeholder do mobile (a Task 5 implementa a auditoria §4 "Mobile").
-// Por ora, mantém a estrutura legada (0-Mobile.sass) no breakpoint único de 1024px:
-// abaixo dele, só o conteúdo; os botões da barra reabrem os painéis via 9btn.js.
-@media screen and (max-width: 1023.98px) {
+// Mobile (auditoria §4 "Mobile", com breakpoint único de 1024px — desvio da spec, R6.1).
+// O JS legado usa o mesmo contrato: `$(window).width() < 1024` em 0filter&highlight.js, 5mobile.js e 9btn.js.
+// Abaixo do breakpoint: só barra superior e conteúdo. Os botões da barra reabrem os painéis
+// (jQuery .show()/.hide() escreve display inline); escolher um post fecha os painéis de novo.
+@media (max-width: 1023.98px) {
+  :root {
+    --topbar-height: calc(52px + env(safe-area-inset-top));
+  }
+
+  #topbarDiv {
+    padding-top: env(safe-area-inset-top);
+    padding-inline: 8px;
+    gap: 4px;
+  }
+
+  #topbarLeft,
+  #topbarRight,
+  .navbox > ul {
+    gap: 2px;
+  }
+
+  // Alvos de toque de 44px; o ícone continua com 18px.
+  .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  // Estado inicial: só leitura. Na barra ficam navegador, anterior/próximo, contato, sumário e tema.
   #cateDiv,
   #tagDiv,
   #filenameDiv,
@@ -14,10 +38,32 @@
     display: none;
   }
 
-  // Larguras legadas quando os painéis são reabertos (5mobile.js parte delas).
+  #lineLeft,
+  #lineRight,
+  #lineSide {
+    display: none !important;
+  }
+
+  // Navegador aberto pelo #topbarToggle: as três colunas ocupam a área de leitura em vez de
+  // comprimir o artigo. 5mobile.js parte de 88px para calcular tags e posts.
   #cateDiv,
   #tagDiv {
     flex-basis: 88px;
+  }
+
+  #cateDiv,
+  #tagDiv,
+  #filenameDiv {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  #filenameDiv {
+    flex-grow: 1;
+  }
+
+  #Div:has(> #filenameDiv[style*="display: block"]) > #contentDiv {
+    display: none;
   }
 
   .cateSup,
@@ -25,9 +71,41 @@
     display: none;
   }
 
-  #lineLeft,
-  #lineRight,
-  #lineSide {
-    display: none !important;
+  // Sumário aberto pelo #topbarStructureToggle: painel sobreposto à direita, sem empurrar o artigo.
+  #rightNavbar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    width: min(280px, 85vw);
+    box-shadow: -1px 0 var(--border), -8px 0 24px rgb(0 0 0 / 0.12);
+  }
+
+  #contentDiv {
+    padding: 24px 16px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .post-content {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+
+  .post-title,
+  .page-heading {
+    font-size: 1.75rem;
+  }
+
+  #contentDiv-Buttons {
+    flex-direction: column;
+  }
+
+  .contentButton {
+    flex-basis: auto;
+  }
+
+  .contentButton--next {
+    margin-left: 0;
   }
 }

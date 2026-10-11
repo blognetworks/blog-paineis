@@ -43,8 +43,8 @@ $(".tagNames").click(   function() {
 $(".postNames").click(   function() {
   var  postTagName = $(this).data('tag' );
   var postCateName = $(this).data('cate');
-  if ( $(window).width() <= 1024 ) {   
-      // 进行屏幕宽度的判断. 如果屏幕宽度<= 414 那就支持手机端的js: 隐藏cate&tag&filename栏.
+  if ( $(window).width() < 1024 ) {   
+      // 进行屏幕宽度的判断. 如果屏幕宽度 < 1024 (breakpoint único, igual ao Sass max-width: 1023.98px) 那就支持手机端的js: 隐藏cate&tag&filename栏.
       // 既然隐藏了 就不用设置高亮了..?  下次点击的时候 想要之前的高亮怎么办..
               $("#cateDiv").hide();
                $("#tagDiv").hide();

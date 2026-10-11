@@ -126,3 +126,109 @@ test.describe('regiões', () => {
     }
   });
 });
+
+// Aceite (Task 5): contraste nos dois temas, mobile sem rolagem horizontal e rede só local.
+import AxeBuilder from '@axe-core/playwright';
+
+const firstPostHref = async (page) => {
+  await page.goto('/');
+  return page.locator('#filenameUL a').first().getAttribute('href');
+};
+
+test.describe('contraste (axe color-contrast)', () => {
+  for (const theme of ['light', 'dark']) {
+    for (const where of ['home', 'post']) {
+      test(`${where} sem violações no tema ${theme}`, async ({ page }) => {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        const href = where === 'post' ? await firstPostHref(page) : '/';
+        await page.addInitScript((t) => {
+          try { localStorage.setItem('blog.theme', t); } catch (e) {}
+        }, theme);
+        await page.goto(href);
+        expect(await dataTheme(page)).toBe(theme);
+        await page.evaluate(() => document.fonts.ready);
+        const { violations } = await new AxeBuilder({ page }).withRules(['color-contrast']).analyze();
+        const resumo = violations.flatMap((v) =>
+          v.nodes.map((n) => `${n.target.join(' ')}: ${n.any.map((a) => a.message).join('; ')}`),
+        );
+        expect(resumo).toEqual([]);
+      });
+    }
+  }
+});
+
+test.describe('mobile 390×844', () => {
+  test('post sem rolagem horizontal e com colunas laterais ocultas', async ({ page }) => {
+    const href = await firstPostHref(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(href);
+    await expect(page.locator('#pageContent h2').first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    for (const id of ['#cateDiv', '#tagDiv', '#filenameDiv', '#rightNavbar']) {
+      await expect(page.locator(id), id).toBeHidden();
+    }
+    // Imagens e código respeitam a largura do conteúdo.
+    const larguras = await page.evaluate(() => {
+      const box = document.querySelector('#contentDiv').getBoundingClientRect();
+      return [...document.querySelectorAll('#pageContent img, #pageContent pre')].map(
+        (el) => el.getBoundingClientRect().right - box.right,
+      );
+    });
+    for (const excesso of larguras) expect(excesso).toBeLessThanOrEqual(0.5);
+  });
+
+  test('#topbarToggle abre os painéis e escolher um post fecha de novo', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    await expect(page.locator('#filenameDiv')).toBeHidden();
+    await page.locator('#topbarToggle').click();
+    for (const id of ['#cateDiv', '#tagDiv', '#filenameDiv']) {
+      await expect(page.locator(id), id).toBeVisible();
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    await page.locator('#filenameUL li.postNames:visible').first().click();
+    for (const id of ['#cateDiv', '#tagDiv', '#filenameDiv', '#rightNavbar']) {
+      await expect(page.locator(id), id).toBeHidden();
+    }
+    await expect(page.locator('#pageContent h2').first()).toBeVisible();
+  });
+
+  test('alvos da barra superior têm 44px', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    const tamanhos = await page.locator('#topbarDiv .icon-button:visible').evaluateAll((els) =>
+      els.map((el) => [el.id || el.title, el.getBoundingClientRect().width, el.getBoundingClientRect().height]),
+    );
+    expect(tamanhos.length).toBeGreaterThan(3);
+    for (const [nome, w, h] of tamanhos) {
+      expect(w, nome).toBeGreaterThanOrEqual(44);
+      expect(h, nome).toBeGreaterThanOrEqual(44);
+    }
+  });
+});
+
+test('cabeçalho "Nesta página" só aparece quando o sumário tem itens', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const href = await firstPostHref(page);
+  await expect(page.locator('#rightNavbar > .panel-header')).toBeHidden();
+  await page.goto(href);
+  await expect(page.locator('#rightNavbar > .panel-header')).toBeVisible();
+});
+
+test.describe('rede', () => {
+  for (const where of ['home', 'post']) {
+    test(`${where} não faz requisições fora de 127.0.0.1`, async ({ page }) => {
+      const href = where === 'post' ? await firstPostHref(page) : '/';
+      const externas = [];
+      page.on('request', (req) => {
+        const url = new URL(req.url());
+        if (/^(data|blob):/.test(req.url())) return;
+        if (url.hostname !== '127.0.0.1') externas.push(req.url());
+      });
+      await page.goto(href, { waitUntil: 'networkidle' });
+      await page.locator('#contentDiv').evaluate((el) => el.scrollTo(0, el.scrollHeight));
+      await page.waitForLoadState('networkidle');
+      expect(externas).toEqual([]);
+    });
+  }
+});

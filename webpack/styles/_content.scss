@@ -84,6 +84,9 @@
     max-width: 100%;
     height: auto;
     margin: 24px auto;
+    // Tokens por tema (_tokens.scss): no escuro, brilho 0,9 e fio de 1px para não ofuscar.
+    filter: var(--img-filter);
+    outline: var(--img-outline);
   }
 
   table {
