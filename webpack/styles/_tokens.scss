@@ -126,8 +126,8 @@
   --code-insert-bg: #203758;
   --code-delete-bg: #252F3D;
 
-  // Imagens do artigo: um pouco menos de brilho para não ofuscar no escuro.
-  --img-filter: brightness(0.9);
+  // Imagens do artigo: a imagem de exemplo já é escura, sem filtro extra.
+  --img-filter: none;
   --img-outline: 1px solid var(--border);
 }
 

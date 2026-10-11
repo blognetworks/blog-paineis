@@ -107,9 +107,11 @@
 
  <div id="topbarRight">
     <!-- 捐赠图标 -->
-    <button type="button" class="icon-button" id="donate" title="Apoiar" aria-label="Apoiar" onclick="alert('Donate: {{site.Phone}}')">
+    {% if site.donate_url and site.donate_url != "" %}
+    <a class="icon-button" id="donate" href="{{ site.donate_url }}" target="_blank" rel="noopener" title="Apoiar" aria-label="Apoiar (abre em nova aba)">
       <svg class="icon" aria-hidden="true"><use xlink:href="#i-heart-handshake"></use></svg>
-    </button>
+    </a>
+    {% endif %}
     <!-- 显隐文件结构栏-->
     <button type="button" class="icon-button" id="topbarStructureToggle" aria-controls="rightNavbar" title="Mostrar ou ocultar sumário" aria-label="Mostrar ou ocultar sumário">
       <svg class="icon" aria-hidden="true"><use xlink:href="#i-panel-right"></use></svg>
