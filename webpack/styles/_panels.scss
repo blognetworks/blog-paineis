@@ -10,8 +10,9 @@
   list-style: none;
 }
 
-// Cabeçalho de painel: 40px, fora das ul (o cálculo de altura em 9ES6-scroll.js o mede).
+// Cabeçalho de painel: 40px, fora das ul; não encolhe na coluna flex do painel.
 .panel-header {
+  flex: 0 0 auto;
   height: 40px;
   display: flex;
   align-items: center;

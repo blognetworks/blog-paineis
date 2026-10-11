@@ -37,10 +37,15 @@ body {
   background: var(--selection-bg);
 }
 
-// O JS legado alterna .hidden para filtrar e recolher painéis.
+// Itens filtrados (filter.js) e datas ocultas (dates.js).
 .hidden {
   display: none !important;
   visibility: hidden !important;
+}
+
+// Painéis e divisores recolhidos (panels.js). !important vence o display das regras por id.
+.is-hidden {
+  display: none !important;
 }
 
 // NProgress (barra de carregamento do PJAX) na cor de acento.

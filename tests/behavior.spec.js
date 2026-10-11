@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import fs from 'node:fs';
 
 // Comportamento da 002 (JS vanilla): navegação parcial, sumário e registro do service worker.
 
@@ -230,5 +231,151 @@ test.describe('filtro e teclado', () => {
     const { violations } = await new AxeBuilder({ page }).withRules(['listitem', 'nested-interactive']).analyze();
     const resumo = violations.flatMap((v) => v.nodes.map((n) => `${v.id} ${n.target.join(' ')}`));
     expect(resumo).toEqual([]);
+  });
+});
+
+// Painéis por classe, alturas em CSS, navegador mobile e atalhos (002, tarefa 3).
+test.describe('painéis e atalhos', () => {
+  const NAV = ['#cateDiv', '#tagDiv', '#filenameDiv', '#lineLeft', '#lineRight'];
+  const semDisplayInline = (page, ids) =>
+    page.evaluate((sels) => sels.filter((s) => document.querySelector(s).style.display !== ''), ids);
+
+  test('#topbarToggle esconde e mostra os três painéis e os dois divisores por classe', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    for (const id of NAV) await expect(page.locator(id), id).toBeVisible();
+
+    await page.locator('#topbarToggle').click();
+    for (const id of NAV) {
+      await expect(page.locator(id), id).toHaveClass(/\bis-hidden\b/);
+      await expect(page.locator(id), id).toBeHidden();
+    }
+    await expect(page.locator('#contentDiv')).toBeVisible();
+
+    await page.locator('#topbarToggle').click();
+    for (const id of NAV) {
+      await expect(page.locator(id), id).not.toHaveClass(/\bis-hidden\b/);
+      await expect(page.locator(id), id).toBeVisible();
+    }
+    expect(await semDisplayInline(page, [...NAV, '#rightNavbar', '#lineSide'])).toEqual([]);
+  });
+
+  test('#topbarStructureToggle alterna o sumário e #lineSide', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const ids = ['#rightNavbar', '#lineSide'];
+    for (const id of ids) await expect(page.locator(id), id).toBeVisible();
+    await page.locator('#topbarStructureToggle').click();
+    for (const id of ids) {
+      await expect(page.locator(id), id).toHaveClass(/\bis-hidden\b/);
+      await expect(page.locator(id), id).toBeHidden();
+    }
+    await page.locator('#topbarStructureToggle').click();
+    for (const id of ids) await expect(page.locator(id), id).toBeVisible();
+    expect(await semDisplayInline(page, ids)).toEqual([]);
+  });
+
+  test('#leftBtn recolhe cate → tag → posts e #rightBtn restaura na ordem inversa', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const visiveis = () =>
+      page.evaluate(() =>
+        ['cateDiv', 'tagDiv', 'lineLeft', 'filenameDiv', 'lineRight'].filter(
+          (id) => document.getElementById(id).getClientRects().length > 0,
+        ),
+      );
+    const left = page.locator('#leftBtn');
+    const right = page.locator('#rightBtn');
+
+    expect(await visiveis()).toEqual(['cateDiv', 'tagDiv', 'lineLeft', 'filenameDiv', 'lineRight']);
+    await left.click();
+    expect(await visiveis()).toEqual(['tagDiv', 'lineLeft', 'filenameDiv', 'lineRight']);
+    await left.click();
+    expect(await visiveis()).toEqual(['filenameDiv', 'lineRight']);
+    await left.click();
+    expect(await visiveis()).toEqual([]);
+
+    await right.click();
+    expect(await visiveis()).toEqual(['filenameDiv', 'lineRight']);
+    await right.click();
+    expect(await visiveis()).toEqual(['tagDiv', 'lineLeft', 'filenameDiv', 'lineRight']);
+    await right.click();
+    expect(await visiveis()).toEqual(['cateDiv', 'tagDiv', 'lineLeft', 'filenameDiv', 'lineRight']);
+    expect(await semDisplayInline(page, NAV)).toEqual([]);
+  });
+
+  test('mobile 390×844: #topbarToggle alterna #Div.is-nav-open, listas rolam até o fim e escolher um post fecha', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    const div = page.locator('#Div');
+    await expect(div).not.toHaveClass(/\bis-nav-open\b/);
+    await expect(page.locator('#filenameDiv')).toBeHidden();
+
+    await page.locator('#topbarToggle').click();
+    await expect(div).toHaveClass(/\bis-nav-open\b/);
+    for (const id of ['#cateDiv', '#tagDiv', '#filenameDiv']) await expect(page.locator(id), id).toBeVisible();
+    await expect(page.locator('#contentDiv')).toBeHidden();
+    for (const list of ['#catenameUL', '#tagnameUL', '#filenameUL']) {
+      const r = await page.locator(list).evaluate((ul) => {
+        ul.scrollTop = ul.scrollHeight;
+        const items = [...ul.querySelectorAll('li')].filter((li) => li.getClientRects().length);
+        return {
+          lastBottom: items[items.length - 1].getBoundingClientRect().bottom,
+          listBottom: ul.getBoundingClientRect().bottom,
+          viewport: window.innerHeight,
+        };
+      });
+      expect(r.listBottom, list).toBeLessThanOrEqual(r.viewport + 0.5);
+      expect(r.lastBottom, list).toBeLessThanOrEqual(r.listBottom + 0.5);
+    }
+
+    await page.locator('#topbarToggle').click();
+    await expect(div).not.toHaveClass(/\bis-nav-open\b/);
+    await expect(page.locator('#filenameDiv')).toBeHidden();
+
+    await page.locator('#topbarToggle').click();
+    await page.locator('#filenameUL li.postNames').first().click();
+    await expect(div).not.toHaveClass(/\bis-nav-open\b/);
+    await expect(page.locator('#pageContent h1.post-title')).toBeVisible();
+    expect(await semDisplayInline(page, [...NAV, '#rightNavbar', '#lineSide'])).toEqual([]);
+  });
+
+  test('o CSS compilado não usa [style*=] nem altura com !important', async () => {
+    const css = fs.readFileSync(new URL('../src/css/main.css', import.meta.url), 'utf8');
+    expect(css).not.toMatch(/style\*=/);
+    expect(css.match(/(?:^|[;{\s])(?:min-|max-)?height\s*:[^;}]*!important/g)).toBeNull();
+  });
+
+  test('atalhos: ← ignorado com foco em separador, item, botão ou modificador; sem foco, recolhe', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const cate = page.locator('#cateDiv');
+
+    // Separador focável (a tarefa 4 dá role="separator" e tabindex nativos aos divisores).
+    await page.locator('#lineLeft').evaluate((el) => {
+      if (!el.hasAttribute('tabindex')) el.tabIndex = 0;
+      if (!el.hasAttribute('role')) el.setAttribute('role', 'separator');
+    });
+    for (const alvo of ['#lineLeft', '#Frontend', '#leftBtn']) {
+      await page.locator(alvo).focus();
+      await page.keyboard.press('ArrowLeft');
+      await page.waitForTimeout(150); // um recolhimento indevido teria tempo de acontecer
+      expect(await cate.isVisible(), alvo).toBe(true);
+    }
+
+    await page.evaluate(() => document.activeElement?.blur());
+    await page.keyboard.press('Alt+ArrowLeft');
+    await page.waitForTimeout(150);
+    expect(await cate.isVisible()).toBe(true);
+
+    await page.keyboard.press('ArrowLeft');
+    await expect(cate).toBeHidden();
+    await page.keyboard.press('ArrowRight');
+    await expect(cate).toBeVisible();
+
+    // ↑ volta ao topo do artigo.
+    await page.locator('#contentDiv').evaluate((el) => { el.scrollTop = 200; });
+    await page.keyboard.press('ArrowUp');
+    await expect.poll(() => page.locator('#contentDiv').evaluate((el) => el.scrollTop)).toBe(0);
   });
 });

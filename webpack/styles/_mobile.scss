@@ -1,7 +1,8 @@
 // Mobile (auditoria §4 "Mobile", com breakpoint único de 1024px — desvio da spec, R6.1).
-// O JS legado usa o mesmo contrato: `$(window).width() < 1024` em 0filter&highlight.js, 5mobile.js e 9btn.js.
-// Abaixo do breakpoint: só barra superior e conteúdo. Os botões da barra reabrem os painéis
-// (jQuery .show()/.hide() escreve display inline); escolher um post fecha os painéis de novo.
+// O JS usa a mesma consulta: MOBILE_QUERY em webpack/js/dom.js (R4.5).
+// Abaixo do breakpoint: só barra superior e conteúdo. O #topbarToggle alterna #Div.is-nav-open
+// e o #topbarStructureToggle alterna #Div.is-toc-open (panels.js); escolher um post e o fim da
+// navegação parcial removem as duas classes.
 @media (max-width: 1023.98px) {
   :root {
     --topbar-height: calc(52px + env(safe-area-inset-top));
@@ -60,20 +61,20 @@
     flex-grow: 1;
   }
 
-  // As listas cabem no painel: 9ES6-scroll.js mede o cabeçalho com o painel oculto (altura 0)
-  // e escreve uma altura inline grande demais. Aqui a lista ocupa o painel (altura de #Div)
-  // menos o cabeçalho fixo de 40px (_panels.scss). !important só sobrepõe a altura inline do JS,
-  // não as larguras (R7.1).
-  #catenameUL,
-  #tagnameUL,
-  #filenameUL {
-    height: calc(100% - 40px) !important;
+  // Navegador aberto: as colunas (flex, _layout.scss) tomam o lugar do artigo; as listas
+  // rolam dentro do painel pela mesma regra do desktop (R4.4).
+  #Div.is-nav-open > #cateDiv,
+  #Div.is-nav-open > #tagDiv,
+  #Div.is-nav-open > #filenameDiv {
+    display: flex;
   }
 
-  // Depende do display inline que o jQuery .show()/.hide() escreve em #filenameDiv.
-  // Na 002 (reescrita do JS) deve virar uma classe de estado (ex.: #Div.is-nav-open).
-  #Div:has(> #filenameDiv[style*="display: block"]) > #contentDiv {
+  #Div.is-nav-open > #contentDiv {
     display: none;
+  }
+
+  #Div.is-toc-open > #rightNavbar {
+    display: flex;
   }
 
   .cateSup,

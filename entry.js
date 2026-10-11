@@ -16,11 +16,8 @@ import '@fontsource/jetbrains-mono/600.css';
 
 import './webpack/js/theme.js';
 
-import './webpack/js/5mobile.js';
-import './webpack/js/9btn.js';
 import './webpack/js/9dragbar.js';
-import './webpack/js/9ES6-scroll.js';
 import './webpack/js/9lazyload.js';
 
-// Módulos ES novos (002): navegação parcial, sumário, barra superior, filtro, datas e service worker.
+// Módulos ES novos (002): navegação parcial, sumário, painéis, atalhos, filtro, datas e service worker.
 import './webpack/js/main.js';
