@@ -1,4 +1,4 @@
-# Blog CMS de três colunas
+# blog-paineis
 
 Blog Jekyll com navegação Categorias → Tags → Posts, navegação parcial sem recarga, barras redimensionáveis e sumário por post. Baseado no tema CMS de Xu-Jian.
 
